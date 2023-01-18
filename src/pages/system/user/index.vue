@@ -268,8 +268,8 @@ const findSubDept = (key: string) => {
   return null
 }
 getSubDepts('0')
-const handleSubmit = (e: Event) => {
-  e.preventDefault();
+const handleSubmit = (e?: Event) => {
+  e?.preventDefault();
   if (timeRangeRef.value != null) {
     formRef.gmtCreate = []
     formRef.gmtCreate.push(timeRangeRef.value[0].format("YYYY-MM-DD 00:00:00"))
@@ -279,10 +279,12 @@ const handleSubmit = (e: Event) => {
   loading.value = true
   _getUsersPage(formRef as UserSearch).then(res => {
     data.value = res.records
+    console.log(data.value)
   }).finally(() => {
     loading.value = false
   })
 }
+handleSubmit()
 </script>
 
 <style lang="less" scoped>

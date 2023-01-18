@@ -1,0 +1,87 @@
+import axios, { AxiosInstance, AxiosResponse } from "axios";
+import { useRouter } from "vue-router";
+import { useUserStore } from "@/store/user";
+import WebConfig from "@/config/defaultSettings";
+import { message, Modal } from "ant-design-vue";
+// 创建axios实例
+const service: AxiosInstance = axios.create({
+  baseURL: import.meta.env.VITE_APP_BASE_API, // api 的 base_url
+  timeout: WebConfig.timeout, // 请求超时时间
+  headers: {
+    "X-Requested-With": "XMLHttpRequest",
+  },
+});
+
+// request拦截器
+service.interceptors.request.use(
+  (config) => {
+    if (getToken() && config.headers) {
+      if (typeof config.headers.set === "function") {
+        config.headers.set("Authorization", `Bearer ${getToken()}`); // 让每个请求携带自定义token 请根据实际情况自行修改
+      }
+    }
+    return config;
+  },
+  (error) => {
+    // Do something with request error
+    console.log(error); // for debug
+    Promise.reject(error);
+  }
+);
+
+// response 拦截器
+service.interceptors.response.use(
+  (response: AxiosResponse<any>) => {
+    let responseData = response.data
+    if(response.request.responseType !== "blob"){
+      if(responseData.access_token != undefined){
+        return responseData
+      }else{
+        if(responseData.code != 200){
+          message.error(responseData.msg);
+          return Promise.reject(responseData.msg);
+        }
+        return responseData.result
+      }
+    }
+    return responseData;
+  },
+  (error) => {
+    if (error.toString().indexOf("Error: timeout") !== -1) {
+      message.error("网络请求超时");
+      return Promise.reject(error);
+    }
+    if (error.response && error.response.data) {
+      let data = error.response.data;
+      if (data.code === 401) {
+        Modal.confirm({
+          title: "系统提示",
+          content: "登录状态已过期，您可以继续留在该页面，或者重新登录",
+          okText: "重新登录",
+          cancelText: "取消",
+          onOk: () => {
+            const userStore = useUserStore();
+            userStore
+              .loginOut()
+              .then((resolve) => {
+                useRouter().push({ name: "login" });
+              })
+              .catch((err) => {
+                location.reload();
+              });
+          },
+        });
+      } else {
+        message.error(data.msg);
+      }
+    } else {
+      message.error("接口请求失败");
+    }
+    return Promise.reject(error);
+  }
+);
+const getToken = () => {
+  const userStore = useUserStore();
+  return userStore.token;
+};
+export default service;

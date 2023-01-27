@@ -1,8 +1,9 @@
-import axios, { AxiosInstance, AxiosResponse } from "axios";
+import axios, { AxiosInstance, AxiosResponse, AxiosRequestConfig } from "axios";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/store/user";
 import WebConfig from "@/config/defaultSettings";
 import { message, Modal } from "ant-design-vue";
+import type { RestResponse } from "@/api/types";
 // 创建axios实例
 const service: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_APP_BASE_API, // api 的 base_url
@@ -32,16 +33,16 @@ service.interceptors.request.use(
 // response 拦截器
 service.interceptors.response.use(
   (response: AxiosResponse<any>) => {
-    let responseData = response.data
-    if(response.request.responseType !== "blob"){
-      if(responseData.access_token != undefined){
-        return responseData
-      }else{
-        if(responseData.code != 200){
+    let responseData = response.data;
+    if (response.request.responseType !== "blob") {
+      if (responseData.access_token != undefined) {
+        return responseData;
+      } else {
+        if (responseData.code != 200) {
           message.error(responseData.msg);
           return Promise.reject(responseData.msg);
         }
-        return responseData.result
+        return responseData;
       }
     }
     return responseData;
@@ -83,5 +84,25 @@ service.interceptors.response.use(
 const getToken = () => {
   const userStore = useUserStore();
   return userStore.token;
+};
+export const httpRequest = <T = any, R = AxiosResponse<T>, D = any>(
+  config: AxiosRequestConfig<D>
+) => {
+  return service<T, RestResponse<R>>(config);
+};
+export const httpRequestWithMsg = <T = any, R = AxiosResponse<T>, D = any>(
+  config: AxiosRequestConfig<D>
+) => {
+  return new Promise<RestResponse<R>>((resolve, reject) => {
+    let promise = service<T, RestResponse<R>>(config);
+    promise
+      .then((res) => {
+        message.success(res.msg);
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
 };
 export default service;

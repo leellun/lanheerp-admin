@@ -1,4 +1,4 @@
-import request from "@/utils/request";
+import request,{ httpRequest,httpRequestWithMsg } from "@/utils/request";
 import type { Page } from "@/api/types";
 
 export interface AuthResult {
@@ -22,18 +22,34 @@ export interface UserItem {
   gmtCreate: string;
   gmtModified: string;
   username: string;
+  realName: string;
   nickName: string;
   gender: number;
   phone: string;
   email: string;
   avatar: string;
-  accountType: number;
   enabled: number;
   failLockTime: string;
   pwdResetTime: string;
   lastLoginTime: string;
   deptName: string;
   roleName: string;
+  canDeleted?: number;
+}
+export interface UserRequest {
+  id: String;
+  username: string;
+  realName: string;
+  nickName: string;
+  deptId: String;
+  deptName: String;
+  gender: number;
+  phone: string;
+  email: string;
+  avatar?: string;
+  enabled?: number;
+  jobId: string;
+  roleIds: string[];
 }
 export const _auth_login = (username: string, password: string) => {
   return request<any, AuthResult>({
@@ -50,9 +66,42 @@ export const _auth_login = (username: string, password: string) => {
 };
 
 export const _getUsersPage = (data: UserSearch) => {
-  return request<any, Page<UserItem>>({
+  return httpRequest<any, Page<UserItem>>({
     url: "/user/user/list",
     method: "post",
     data,
+  });
+};
+export const _addUser = (data: UserRequest) => {
+  return httpRequest<any, any>({
+    url: "/user/user",
+    method: "post",
+    data,
+  });
+};
+export const _updateUser = (data: UserRequest) => {
+  return httpRequest<any, any>({
+    url: "/user/user",
+    method: "put",
+    data,
+  });
+};
+export const _getUser = (id: string) => {
+  return httpRequest<any, UserRequest>({
+    url: `/user/user/${id}`,
+    method: "get",
+  });
+};
+export const _deleteUser = (data: string[]) => {
+  return httpRequest<any, any>({
+    url: `/user/user`,
+    method: "delete",
+    data
+  });
+};
+export const _resetPass = (id: string) => {
+  return httpRequestWithMsg<any, any>({
+    url: `/user/user/resetPass/${id}`,
+    method: "put"
   });
 };

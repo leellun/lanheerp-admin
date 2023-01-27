@@ -33,7 +33,6 @@ import { useUserStore } from '@/store/user'
 import { ref, reactive, UnwrapRef } from 'vue'
 import { Form } from 'ant-design-vue'
 import { Router, useRouter } from 'vue-router'
-import encrypt from "@/utils/secret";
 import { generateAsyncRoutes } from "@/router/basicRouter";
 import setting from "@/config/defaultSettings";
 import { _auth_login } from '@/api/userApi'
@@ -87,7 +86,6 @@ function handleSubmit(e: Event) {
         router.push({ path: '/' });
       }
     }).catch(err => {
-
 
     }).finally(() => {
       state.value = false;

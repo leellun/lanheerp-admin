@@ -6,7 +6,7 @@
         <div class="head-container">
           <a-form-item>
             <a-input v-model:value="deptName" size="small" placeholder="输入部门名称搜索" style="width: 200px"
-              @change="onDeptChange" @search="onSearch">
+              @change="onDeptChange">
               <template #prefix><search-outlined /></template>
             </a-input>
           </a-form-item>
@@ -56,58 +56,68 @@
             </a-button>
           </a-form-item>
         </a-form>
-        <a-table :columns="columns" :data-source="data" :pagination="pagination" :loading="loading">
-          <template #headerCell="{ column }">
-            <template v-if="column.key === 'name'">
-              <span>
-                Name
-              </span>
-            </template>
-          </template>
+        <!-- 操作按钮区域 -->
+        <div class="table-operator" style="border-top: 5px">
+          <a-button type="primary" size="small" @click="handleAdd"><template #icon>
+              <plus-outlined />
+            </template>新增</a-button>
+          <a-button type="primary" danger size="small" style="margin-left:10px" :disabled="selectedRowKeys.length == 0"
+            @click="deleteUsers"><delete-outlined />删除</a-button>
+        </div>
+        <a-table :columns="columns" :data-source="data" :pagination="pagination" :loading="loading"
+          :scroll="{ x: 1210 }"
+          :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange, getCheckboxProps: getCheckboxProps }">
 
           <template #bodyCell="{ column, record }">
-            <template v-if="column.key === 'name'">
-              <a>
-                {{ record.name }}
-              </a>
-            </template>
-            <template v-else-if="column.key === 'tags'">
+            <template v-if="column.key === 'gender'">
               <span>
-                <a-tag v-for="tag in record.tags" :key="tag"
-                  :color="tag === 'loser' ? 'volcano' : tag.length > 5 ? 'geekblue' : 'green'">
-                  {{ tag.toUpperCase() }}
-                </a-tag>
+                {{ record.gender === 1 ? '男' : '女' }}
+              </span>
+            </template>
+            <template v-else-if="column.key === 'enabled'">
+              <a-tag color="red" v-if="record.enabled === 1">启用</a-tag>
+              <a-tag color="green" v-else>禁用</a-tag>
+            </template>
+            <template v-else-if="column.key === 'roleNames'">
+              <span>
+                {{ getRoleNames(record.roleNames) }}
               </span>
             </template>
             <template v-else-if="column.key === 'action'">
               <span>
-                <a>Invite 一 {{ record.name }}</a>
+                <a @click="(e?: Event) => editUser(e, record.id)">编辑</a>
                 <a-divider type="vertical" />
-                <a>Delete</a>
+                <a-popconfirm title="是否删除用户？" ok-text="是" cancel-text="否" @confirm="() => deleteUser([record.id])"
+                  v-if="record.canDeleted === 1">
+                  <a>删除</a>
+                </a-popconfirm>
+                <a v-else="record.username==='admin'" style="visibility:hidden">删除</a>
                 <a-divider type="vertical" />
-                <a class="ant-dropdown-link">
-                  More actions
-                  <down-outlined />
-                </a>
+                <a-popconfirm title="是否重置密码？" ok-text="是" cancel-text="否" @confirm="() => resetPassword(record.id)">
+                  <a>重置密码</a>
+                </a-popconfirm>
+
               </span>
             </template>
           </template>
         </a-table>
       </a-col>
     </a-row>
+    <UserModal v-model:visible="userVisible" :id="userId" v-if="userVisible" @ok="handleOk" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, reactive } from 'vue'
-import type { TreeProps } from 'ant-design-vue'
+import { ref, reactive } from 'vue'
+import { message, Modal, TreeProps } from 'ant-design-vue'
 import type { DataNode } from 'ant-design-vue/lib/tree';
-import { SearchOutlined, UndoOutlined } from '@ant-design/icons-vue';
 import { _getSubDepts, _searchDepts } from '@/api/deptApi'
 import type { Dept } from '@/api/deptApi'
-import { _getUsersPage } from '@/api/userApi'
+import { _getUsersPage, _deleteUser, _resetPass } from '@/api/userApi'
 import type { UserSearch, UserItem } from '@/api/userApi'
 import type { Dayjs } from 'dayjs';
+import UserModal from './modals/UserModal.vue'
+
 type RangeValue = [Dayjs, Dayjs];
 const timeRangeRef = ref<RangeValue>()
 const deptName = ref<string>('')
@@ -116,64 +126,96 @@ const formRef = reactive<Partial<UserSearch>>({
 })
 const showTreeTip = ref(false)
 const loading = ref(false)
+const userId = ref<string>()
 const treeData2: TreeProps['treeData'] = [];
 const treeData = ref(treeData2)
 const expandedKeys = ref<string[]>();
 const selectedKeys = ref<string[]>();
 const checkedKeys = ref<string[]>();
-const pagination = ref<string>('bottomRight')
+const selectedRowKeys = ref<string[]>([]);
+const userVisible = ref<boolean>(false);
+const handleOk = () => {
+  formRef.pageNo = 1
+  handleSubmit()
+};
+const pagination = reactive<any>({ pageSize: 10, pageNo: 1 })
 const columns = [
   {
-    name: '用户名',
+    title: '用户名',
     dataIndex: 'username',
     key: 'username',
+    width: 100
   },
   {
     title: '昵称',
     dataIndex: 'nickName',
     key: 'nickName',
+    width: 100
   },
   {
     title: '性别',
     key: 'gender',
+    width: 60
   },
   {
     title: '电话',
+    dataIndex: 'phone',
     key: 'phone',
+    width: 100
   },
   {
     title: '邮箱',
+    dataIndex: 'email',
     key: 'email',
+    width: 100
   },
   {
     title: '角色',
-    key: 'roleName',
+    key: 'roleNames',
+    width: 100
   },
   {
     title: '部门',
+    dataIndex: 'deptName',
     key: 'deptName',
+    width: 100
   },
   {
     title: '状态',
     key: 'enabled',
+    width: 60
   },
   {
     title: '创建日期',
+    dataIndex: 'gmtCreate',
     key: 'gmtCreate',
+    width: 120
   },
   {
     title: '最后一次登录时间',
+    dataIndex: 'lastLoginTime',
     key: 'lastLoginTime',
+    width: 120
   }, {
     title: '操作',
+    fixed: 'right',
+    width: 180,
     key: 'action'
   }
 ];
-
-const data = ref<Array<UserItem>>([]);
-const onSearch = (searchValue: string) => {
-
+const onSelectChange = (keys: string[]) => {
+  selectedRowKeys.value = keys;
+};
+const getCheckboxProps = (record: UserItem) => ({
+  disabled: record.username === 'admin', // Column configuration not to be checked
+})
+const getRoleNames = (roleNames: Array<string>) => {
+  if (roleNames == null || roleNames == undefined) {
+    return null;
+  }
+  return roleNames.join(',')
 }
+const data = ref<Array<UserItem | any>>([]);
 let interval: any;
 const onDeptChange = () => {
   if (interval != undefined && interval != null) {
@@ -188,7 +230,7 @@ const onDeptChange = () => {
         checkedKeys.value = []
         expandedKeys.value = []
         let tmpTreeData: DataNode[] = [];
-        covertDepts(res, tmpTreeData)
+        covertDepts(res.result, tmpTreeData)
         treeData.value = tmpTreeData
       })
     }
@@ -206,7 +248,7 @@ const onLoadData = (node: DataNode) => {
     _getSubDepts(node.key as string).then(res => {
       let treeNode = findSubDept(node.key as string)
       treeNode!.children = []
-      res.forEach(item => {
+      res.result.forEach(item => {
         item.isLeaf = item.subCount == 0
         treeNode!.children?.push({
           isLeaf: item.subCount === 0,
@@ -229,7 +271,7 @@ const getSubDepts = (pid: string) => {
     let tmpTreeData: DataNode[];
     treeData.value.splice(0, treeData.value.length)
     tmpTreeData = treeData.value;
-    res.forEach(item => {
+    res.result.forEach(item => {
       item.isLeaf = item.subCount == 0
       tmpTreeData?.push({
         isLeaf: item.subCount === 0,
@@ -274,19 +316,58 @@ const handleSubmit = (e?: Event) => {
     formRef.gmtCreate = []
     formRef.gmtCreate.push(timeRangeRef.value[0].format("YYYY-MM-DD 00:00:00"))
     formRef.gmtCreate.push(timeRangeRef.value[1].format("YYYY-MM-DD 00:00:00"))
+  }else{
+    formRef.gmtCreate = []
   }
   formRef.deptIds = checkedKeys.value
   loading.value = true
   _getUsersPage(formRef as UserSearch).then(res => {
-    data.value = res.records
-    console.log(data.value)
+    data.value = res.result.records
+    data.value.forEach(item => {
+      item.key = item.id
+    })
   }).finally(() => {
     loading.value = false
   })
 }
+const handleAdd = (e?: Event) => {
+  e?.preventDefault()
+  userId.value = undefined
+  userVisible.value = true;
+}
 handleSubmit()
+const resetPassword = (id: string) => {
+  _resetPass(id)
+}
+const editUser = (e?: Event, id?: string) => {
+  e?.preventDefault()
+  userId.value = id
+  userVisible.value = true;
+}
+const deleteUsers = () => {
+  if (selectedRowKeys.value.length > 0) {
+    Modal.confirm({
+      title: "系统提示",
+      content: "是否删除选中用户？",
+      okText: "确认",
+      cancelText: "取消",
+      onOk: () => {
+        deleteUser(selectedRowKeys.value)
+      },
+    });
+
+  }
+}
+const deleteUser = (ids: string[]) => {
+  _deleteUser(ids).then(res => {
+    message.success(res.msg)
+    handleSubmit()
+  })
+}
 </script>
 
 <style lang="less" scoped>
-
+.table-operator {
+  margin: 10px 0;
+}
 </style>

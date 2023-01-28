@@ -86,6 +86,13 @@ export const _updateUser = (data: UserRequest) => {
     data,
   });
 };
+export const _enableUser = (id: string, enable: number) => {
+  return httpRequestWithMsg<any, any>({
+    url: `/user/user/enable/${id}`,
+    method: "put",
+    params: { enable },
+  });
+};
 export const _getUser = (id: string) => {
   return httpRequest<any, UserRequest>({
     url: `/user/user/${id}`,

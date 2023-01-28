@@ -94,7 +94,16 @@ export default {
             keepAlive: true,
           },
           component: "system/user",
+        },{
+          name: "job",
+          meta: {
+            title: "岗位管理",
+            show: true,
+            keepAlive: true,
+          },
+          component: "system/job",
         },
+        
       ],
     },
   ],

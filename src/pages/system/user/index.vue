@@ -50,7 +50,7 @@
             </a-button>
           </a-form-item>
           <a-form-item>
-            <a-button size="small" type="primary">
+            <a-button size="small" type="primary" @click="handleResetSearch">
               <template #icon><undo-outlined /></template>
               重置
             </a-button>
@@ -65,7 +65,7 @@
             @click="deleteUsers"><delete-outlined />删除</a-button>
         </div>
         <a-table :columns="columns" :data-source="data" :pagination="pagination" :loading="loading"
-          :scroll="{ x: 1210 }"
+          :scroll="{ x: 1210 }" @change="handleTableChange"
           :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange, getCheckboxProps: getCheckboxProps }">
 
           <template #bodyCell="{ column, record }">
@@ -75,8 +75,8 @@
               </span>
             </template>
             <template v-else-if="column.key === 'enabled'">
-              <a-tag color="red" v-if="record.enabled === 1">启用</a-tag>
-              <a-tag color="green" v-else>禁用</a-tag>
+              <a-tag color="green" v-if="record.enabled === 1">启用</a-tag>
+              <a-tag color="red" v-else>禁用</a-tag>
             </template>
             <template v-else-if="column.key === 'roleNames'">
               <span>
@@ -86,6 +86,9 @@
             <template v-else-if="column.key === 'action'">
               <span>
                 <a @click="(e?: Event) => editUser(e, record.id)">编辑</a>
+                <a-divider type="vertical" />
+                <a-switch :checked="record.enabled === 1" checked-children="启用" un-checked-children="禁用"
+                  @change="handleEnableChange(record.id, record.enabled === 0 ? 1 : 0)" />
                 <a-divider type="vertical" />
                 <a-popconfirm title="是否删除用户？" ok-text="是" cancel-text="否" @confirm="() => deleteUser([record.id])"
                   v-if="record.canDeleted === 1">
@@ -109,11 +112,11 @@
 
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
-import { message, Modal, TreeProps } from 'ant-design-vue'
+import { message, Modal, TreeProps, Form } from 'ant-design-vue'
 import type { DataNode } from 'ant-design-vue/lib/tree';
 import { _getSubDepts, _searchDepts } from '@/api/deptApi'
 import type { Dept } from '@/api/deptApi'
-import { _getUsersPage, _deleteUser, _resetPass } from '@/api/userApi'
+import { _getUsersPage, _deleteUser, _resetPass, _enableUser } from '@/api/userApi'
 import type { UserSearch, UserItem } from '@/api/userApi'
 import type { Dayjs } from 'dayjs';
 import UserModal from './modals/UserModal.vue'
@@ -124,6 +127,8 @@ const deptName = ref<string>('')
 const formRef = reactive<Partial<UserSearch>>({
   blurry: '',
 })
+const useForm = Form.useForm
+const { resetFields } = useForm(formRef)
 const showTreeTip = ref(false)
 const loading = ref(false)
 const userId = ref<string>()
@@ -135,7 +140,6 @@ const checkedKeys = ref<string[]>();
 const selectedRowKeys = ref<string[]>([]);
 const userVisible = ref<boolean>(false);
 const handleOk = () => {
-  formRef.pageNo = 1
   handleSubmit()
 };
 const pagination = reactive<any>({ pageSize: 10, pageNo: 1 })
@@ -144,13 +148,13 @@ const columns = [
     title: '用户名',
     dataIndex: 'username',
     key: 'username',
-    width: 100
+    width: 80
   },
   {
     title: '昵称',
     dataIndex: 'nickName',
     key: 'nickName',
-    width: 100
+    width: 80
   },
   {
     title: '性别',
@@ -161,18 +165,18 @@ const columns = [
     title: '电话',
     dataIndex: 'phone',
     key: 'phone',
-    width: 100
+    width: 80
   },
   {
     title: '邮箱',
     dataIndex: 'email',
     key: 'email',
-    width: 100
+    width: 80
   },
   {
     title: '角色',
     key: 'roleNames',
-    width: 100
+    width: 80
   },
   {
     title: '部门',
@@ -181,25 +185,20 @@ const columns = [
     width: 100
   },
   {
-    title: '状态',
-    key: 'enabled',
-    width: 60
-  },
-  {
     title: '创建日期',
     dataIndex: 'gmtCreate',
     key: 'gmtCreate',
-    width: 120
+    width: 100
   },
   {
     title: '最后一次登录时间',
     dataIndex: 'lastLoginTime',
     key: 'lastLoginTime',
-    width: 120
+    width: 100
   }, {
     title: '操作',
     fixed: 'right',
-    width: 180,
+    width: 200,
     key: 'action'
   }
 ];
@@ -312,16 +311,24 @@ const findSubDept = (key: string) => {
 getSubDepts('0')
 const handleSubmit = (e?: Event) => {
   e?.preventDefault();
+  formRef.pageNo = 1
+  getUsersPage()
+}
+const getUsersPage = () => {
   if (timeRangeRef.value != null) {
     formRef.gmtCreate = []
     formRef.gmtCreate.push(timeRangeRef.value[0].format("YYYY-MM-DD 00:00:00"))
     formRef.gmtCreate.push(timeRangeRef.value[1].format("YYYY-MM-DD 00:00:00"))
-  }else{
+  } else {
     formRef.gmtCreate = []
   }
   formRef.deptIds = checkedKeys.value
+  formRef.pageSize = pagination.pageSize
   loading.value = true
   _getUsersPage(formRef as UserSearch).then(res => {
+    pagination.pageNo = res.result.current
+    pagination.pageSize = res.result.size
+    pagination.total = res.result.total
     data.value = res.result.records
     data.value.forEach(item => {
       item.key = item.id
@@ -329,6 +336,15 @@ const handleSubmit = (e?: Event) => {
   }).finally(() => {
     loading.value = false
   })
+}
+const handleTableChange = (page: any, filters: any, sorter: any) => {
+  pagination.value = page;
+  getUsersPage();
+}
+const handleResetSearch = () => {
+  resetFields()
+  timeRangeRef.value = undefined
+  formRef.enabled = undefined
 }
 const handleAdd = (e?: Event) => {
   e?.preventDefault()
@@ -361,7 +377,12 @@ const deleteUsers = () => {
 const deleteUser = (ids: string[]) => {
   _deleteUser(ids).then(res => {
     message.success(res.msg)
-    handleSubmit()
+    getUsersPage()
+  })
+}
+const handleEnableChange = (id: string, enabled: number) => {
+  _enableUser(id, enabled).then(res => {
+    getUsersPage()
   })
 }
 </script>

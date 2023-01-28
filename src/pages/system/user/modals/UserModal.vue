@@ -50,7 +50,7 @@
   </a-modal>
 </template>
 <script setup lang="ts">
-import { message, TreeSelectProps } from 'ant-design-vue';
+import { message, TreeSelectProps,Form } from 'ant-design-vue';
 import type { UserRequest } from '@/api/userApi'
 import { _addUser, _getUser, _updateUser } from '@/api/userApi'
 import { _getSubDepts } from '@/api/deptApi'
@@ -59,7 +59,6 @@ import { _getAllRoles } from '@/api/roleApi'
 import type { Job } from '@/api/jobApi'
 import { _getAllJobs } from '@/api/jobApi'
 import { ref, reactive, watch } from 'vue'
-import { Form } from 'ant-design-vue'
 const useForm = Form.useForm
 const props = withDefaults(defineProps<{
   visible: boolean,

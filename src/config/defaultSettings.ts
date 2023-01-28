@@ -102,6 +102,14 @@ export default {
             keepAlive: true,
           },
           component: "system/job",
+        },{
+          name: "department",
+          meta: {
+            title: "部门管理",
+            show: true,
+            keepAlive: true,
+          },
+          component: "system/department",
         },
         
       ],

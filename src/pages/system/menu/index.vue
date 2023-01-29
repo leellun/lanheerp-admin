@@ -2,11 +2,11 @@
     <div class="main-container">
         <!-- 操作按钮区域 -->
         <div class="table-operator" style="border-top: 5px">
-            <a-button type="primary" size="small" @click="handleAdd"><template #icon>
+            <a-button type="primary" size="small" @click="handleAdd"  v-permission="['menu:add']"><template #icon>
                     <plus-outlined />
                 </template>新增</a-button>
             <a-button type="primary" danger size="small" style="margin-left:10px"
-                :disabled="selectedRowKeys.length == 0" @click="handleDeleteSelected"><delete-outlined />删除</a-button>
+                :disabled="selectedRowKeys.length == 0" @click="handleDeleteSelected"  v-permission="['menu:delete']"><delete-outlined />删除</a-button>
         </div>
         <a-table :columns="columns" :data-source="data" :pagination="pagination" :loading="loading"
             @change="handleTableChange" :scroll="{ x: 280 }" v-model:expandedRowKeys="expandedRowKeys"
@@ -31,17 +31,17 @@
                 </template>
                 <template v-else-if="column.key === 'action'">
                     <span>
-                        <a @click="(e?: Event) => handleEditRecord(e, record.id)">编辑</a>
-                        <a-divider type="vertical" />
+                        <a @click="(e?: Event) => handleEditRecord(e, record.id)" v-permission="['menu:update']">编辑</a>
+                        <a-divider type="vertical"  v-permission="['menu:update']"/>
                         <a-switch :checked="record.enabled === 1" checked-children="启用" un-checked-children="禁用"
-                            @change="handleEnableChange(record, record.enabled === 0 ? 1 : 0)" />
-                        <a-divider type="vertical" />
+                            @change="handleEnableChange(record, record.enabled === 0 ? 1 : 0)"  v-permission="['menu:update']"/>
+                        <a-divider type="vertical"  v-permission="['menu:update']"/>
                         <a-popconfirm title="是否删除部门？" ok-text="是" cancel-text="否"
-                            @confirm="() => handleDeleteRecord(record)">
+                            @confirm="() => handleDeleteRecord(record)" v-permission="['menu:delete']">
                             <a>删除</a>
                         </a-popconfirm>
-                        <a-divider type="vertical" />
-                        <a @click="(e: Event) => handleAppendChildMenu(record, e)">追加</a>
+                        <a-divider type="vertical"  v-permission="['menu:delete']"/>
+                        <a @click="(e: Event) => handleAppendChildMenu(record, e)" v-permission="['menu:update']">追加</a>
                     </span>
                 </template>
             </template>

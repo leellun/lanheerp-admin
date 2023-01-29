@@ -1,8 +1,10 @@
 import { TRouter } from "@/router/types";
 import { defineStore } from "pinia";
+import { _getCatalogues,_getUserPermissions } from "@/api/menuApi";
 interface PermissionState {
   menus: Array<TRouter>;
   tagPaths: Array<string>;
+  permissions: Array<string>;
   isInitMenu: boolean;
 }
 export const usePermissionStore = defineStore("permission", {
@@ -10,6 +12,7 @@ export const usePermissionStore = defineStore("permission", {
     return {
       menus: [],
       tagPaths:[],
+      permissions:[],
       isInitMenu: false,
     };
   },
@@ -23,8 +26,20 @@ export const usePermissionStore = defineStore("permission", {
       this.menus = menus;
       this.isInitMenu = true;
     },
-    async addVisitedRoute(route: any) {
-      // console.log(route);
+    async getCatalogues() {
+      try {
+        let res = await _getCatalogues();
+        return res.result;
+      } catch (e) {
+        return [];
+      }
+    },
+    async getUserPermissions() {
+      try {
+        let res = await _getUserPermissions();
+        this.permissions= res.result;
+      } catch (e) {
+      }
     },
   },
 });

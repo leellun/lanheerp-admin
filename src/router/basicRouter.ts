@@ -66,7 +66,7 @@ export const generateApiAsyncRoutes = (router: Router, menus: Array<Menu>) => {
     if (pMenuObj[menu.id] === undefined) {
       pMenuObj[menu.id] = [];
     }
-    tRouter.children=pMenuObj[menu.id];
+    tRouter.children = pMenuObj[menu.id];
     if (menu.pid === null) {
       rootMenus.push(tRouter);
     } else {
@@ -77,7 +77,7 @@ export const generateApiAsyncRoutes = (router: Router, menus: Array<Menu>) => {
       }
     }
   });
-  generateAsyncRoutes(router,rootMenus)
+  generateAsyncRoutes(router, rootMenus);
 };
 const covertMenuToTRouter = (menu: Menu) => {
   let router: TRouter = {
@@ -124,6 +124,8 @@ const resetMenuPath = (parentPath: string, menus: Array<TRouter>) => {
     }
     if (item.children != undefined && item.children.length > 0) {
       resetMenuPath(item.path, item.children);
+    } else {
+      item.children = undefined;
     }
   });
 };

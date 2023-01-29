@@ -1,8 +1,6 @@
 import { defineStore } from "pinia";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "./mutation-types";
 import storage from "@/utils/Storage";
-import type { Menu } from "@/api/menuApi";
-import { _getCatalogues } from "@/api/menuApi";
 
 export const useUserStore = defineStore("user", {
   state: () => {
@@ -33,14 +31,6 @@ export const useUserStore = defineStore("user", {
     setToken(accessToken: string, refreshToken: string) {
       this.token = accessToken;
       this.refreshToken = refreshToken;
-    },
-    async getCatalogues() {
-      try {
-        let res = await _getCatalogues();
-        return res.result;
-      } catch (e) {
-        return [];
-      }
     },
     loginOut() {
       return new Promise((resolve, rej) => {

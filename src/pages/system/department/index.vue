@@ -16,7 +16,7 @@
                 </a-select>
             </a-form-item>
             <a-form-item>
-                <a-button size="small" type="primary" html-type="submit">
+                <a-button size="small" type="primary" html-type="submit" v-permission="['dept:select']">
                     <template #icon>
                         <SearchOutlined />
                     </template>
@@ -32,11 +32,11 @@
         </a-form>
         <!-- 操作按钮区域 -->
         <div class="table-operator" style="border-top: 5px">
-            <a-button type="primary" size="small" @click="handleAdd"><template #icon>
+            <a-button type="primary" size="small" @click="handleAdd" v-permission="['dept:add']"><template #icon>
                     <plus-outlined />
                 </template>新增</a-button>
             <a-button type="primary" danger size="small" style="margin-left:10px"
-                :disabled="selectedRowKeys.length == 0" @click="handleDeleteSelected"><delete-outlined />删除</a-button>
+                :disabled="selectedRowKeys.length == 0" @click="handleDeleteSelected"  v-permission="['dept:delete']"><delete-outlined />删除</a-button>
         </div>
         <a-table :columns="columns" :data-source="data" :pagination="pagination" :loading="loading"
             @change="handleTableChange" :scroll="{ x: 280 }"
@@ -53,14 +53,14 @@
                 </template>
                 <template v-else-if="column.key === 'action'">
                     <span>
-                        <a @click="(e?: Event) => handleEditRecord(e, record.id)">编辑</a>
-                        <a-divider type="vertical" />
+                        <a @click="(e?: Event) => handleEditRecord(e, record.id)"  v-permission="['dept:update']">编辑</a>
+                        <a-divider type="vertical" v-permission="['dept:update']"/>
                         <a-switch :checked="record.enabled === 1" checked-children="启用" un-checked-children="禁用"
-                            @change="handleEnableChange(record.id, record.enabled === 0 ? 1 : 0)" />
-                        <a-divider type="vertical" />
+                            @change="handleEnableChange(record.id, record.enabled === 0 ? 1 : 0)" v-permission="['dept:update']"/>
+                        <a-divider type="vertical" v-permission="['dept:update']"/>
                         <a-popconfirm title="是否删除部门？" ok-text="是" cancel-text="否"
-                            @confirm="() => handleDeleteRecord([record.id])">
-                            <a>删除</a>
+                            @confirm="() => handleDeleteRecord([record.id])" v-permission="['dept:delete']">
+                            <a v-permission="['dept:delete']">删除</a>
                         </a-popconfirm>
                     </span>
                 </template>

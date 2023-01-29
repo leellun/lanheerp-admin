@@ -42,7 +42,7 @@
             </a-select>
           </a-form-item>
           <a-form-item>
-            <a-button size="small" type="primary" html-type="submit">
+            <a-button size="small" type="primary" html-type="submit"  v-permission="['user:select']">
               <template #icon>
                 <SearchOutlined />
               </template>
@@ -58,11 +58,11 @@
         </a-form>
         <!-- 操作按钮区域 -->
         <div class="table-operator" style="border-top: 5px">
-          <a-button type="primary" size="small" @click="handleAdd"><template #icon>
+          <a-button type="primary" size="small" @click="handleAdd"  v-permission="['user:add']"><template #icon>
               <plus-outlined />
             </template>新增</a-button>
           <a-button type="primary" danger size="small" style="margin-left:10px" :disabled="selectedRowKeys.length == 0"
-            @click="deleteUsers"><delete-outlined />删除</a-button>
+            @click="deleteUsers"  v-permission="['user:delete']"><delete-outlined />删除</a-button>
         </div>
         <a-table :columns="columns" :data-source="data" :pagination="pagination" :loading="loading"
           :scroll="{ x: 1210 }" @change="handleTableChange"
@@ -85,18 +85,18 @@
             </template>
             <template v-else-if="column.key === 'action'">
               <span>
-                <a @click="(e?: Event) => editUser(e, record.id)">编辑</a>
-                <a-divider type="vertical" />
+                <a @click="(e?: Event) => editUser(e, record.id)"  v-permission="['user:update']">编辑</a>
+                <a-divider type="vertical"  v-permission="['user:update']"/>
                 <a-switch :checked="record.enabled === 1" checked-children="启用" un-checked-children="禁用"
-                  @change="handleEnableChange(record.id, record.enabled === 0 ? 1 : 0)" />
-                <a-divider type="vertical" />
+                  @change="handleEnableChange(record.id, record.enabled === 0 ? 1 : 0)"  v-permission="['user:update']"/>
+                <a-divider type="vertical"  v-permission="['user:update']"/>
                 <a-popconfirm title="是否删除用户？" ok-text="是" cancel-text="否" @confirm="() => deleteUser([record.id])"
-                  v-if="record.canDeleted === 1">
+                  v-if="record.canDeleted === 1" v-permission="['user:delete']">
                   <a>删除</a>
                 </a-popconfirm>
                 <a v-else="record.username==='admin'" style="visibility:hidden">删除</a>
-                <a-divider type="vertical" />
-                <a-popconfirm title="是否重置密码？" ok-text="是" cancel-text="否" @confirm="() => resetPassword(record.id)">
+                <a-divider type="vertical"  v-permission="['user:delete']"/>
+                <a-popconfirm title="是否重置密码？" ok-text="是" cancel-text="否" @confirm="() => resetPassword(record.id)" v-permission="['user:update']">
                   <a>重置密码</a>
                 </a-popconfirm>
 

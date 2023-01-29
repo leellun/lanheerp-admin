@@ -32,11 +32,11 @@
                 </a-select>
             </a-form-item>
             <a-form-item v-if="form.type === 1 && form.target === 0" label="组件名称" :labelCol="labelCol"
-                :wrapperCol="wrapperCol" >
+                :wrapperCol="wrapperCol">
                 <a-input placeholder="请输入组件名称" v-model:value="form.name" />
             </a-form-item>
             <a-form-item v-if="form.type === 1 && form.target === 0" label="组件" :labelCol="labelCol"
-                :wrapperCol="wrapperCol" >
+                :wrapperCol="wrapperCol">
                 <a-input placeholder="请输入组件" v-model:value="form.component" />
             </a-form-item>
             <a-form-item v-if="form.type === 1" label="地址" :labelCol="labelCol" :wrapperCol="wrapperCol"
@@ -227,15 +227,15 @@ const handleOk = () => {
     if (form.type === 1) {
         fields.push(...["target"])
         if (form.target === 0) {
-            if (form.path.trim() === '') {
-                if (form.name.trim() === '' || form.component === '') {
+            if (form.path === undefined || form.path.trim() === '') {
+                if (form.name === undefined || form.name.trim() === '' || form.component === undefined || form.component.trim() === '') {
                     message.error("组件名、组件或者地址必须选择其一")
-                    return 
+                    return
                 }
             }
             fields.push(...["keepAlive"])
         } else {
-            if (form.path.trim() === undefined || form.path.trim() === '') {
+            if (form.path === undefined || form.path.trim() === '') {
                 message.error("请输入地址")
                 return;
             }

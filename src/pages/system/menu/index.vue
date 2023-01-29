@@ -279,6 +279,7 @@ const removeMenuExpandIds = (menus: Array<any>) => {
     }
 }
 let sortTimeOut: any = {};
+let sortTimeOut2: any = {};
 const handleMenuSort = (menu: Menu, value: number) => {
     menu.menuSort = value
     if (sortTimeOut[menu.id] !== undefined) {
@@ -287,9 +288,24 @@ const handleMenuSort = (menu: Menu, value: number) => {
     }
     sortTimeOut[menu.id] = setTimeout(() => {
         _updateMenuSort(menu.id, value).then(res => {
-            data.value.sort((a, b) => a.menuSort - b.menuSort)
+            refreshGroupMenuSort(menu.id, data.value)
         })
     }, 1000)
+}
+const refreshGroupMenuSort = (id: string, menus: Array<Menu>) => {
+    var result = false
+    for (let menu of menus) {
+        if (id === menu.id) {
+            result = true
+            break
+        }
+        if (menu.children && menu.children.length > 0) {
+            refreshGroupMenuSort(id, menu.children)
+        }
+    }
+    if (result) {
+        menus.sort((a, b) => a.menuSort - b.menuSort)
+    }
 }
 handleSearch()
 </script>

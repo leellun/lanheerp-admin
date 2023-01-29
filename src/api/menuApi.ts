@@ -32,6 +32,12 @@ export const _getPageMenus = (params: MenuSearch) => {
     params,
   });
 };
+export const _getCatalogues = async () => {
+    return httpRequest<any, Array<Menu>>({
+      url: `/user/menu/catalogue`,
+      method: "get"
+    });
+  };
 export const _getMenu = (id: string) => {
   return httpRequest<any, Menu>({
     url: `/user/menu/${id}`,

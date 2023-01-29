@@ -1,11 +1,12 @@
 import { TRouter } from "./types";
 import { Router, RouteRecordRaw } from "vue-router";
-import { BasicLayout, RouteView,BlankLayout } from "@/layouts";
+import { BasicLayout, RouteView, BlankLayout } from "@/layouts";
 
 import { getRoutePages } from "@/utils/batchImportFiles";
 import { usePermissionStore } from "@/store/permission";
 import { cloneDeep } from "lodash";
 import { AnyFn } from "@vueuse/core";
+import { Menu } from "@/api/menuApi";
 
 const layouts: { [x: string]: Function } = {
   BasicLayout,
@@ -56,6 +57,45 @@ export function getLeafMenuForFShow(menu: TRouter) {
 export function loadMenus(router: Router) {
   generateAsyncRoutes(router, rootRouter.children);
 }
+export const generateApiAsyncRoutes = (router: Router, menus: Array<Menu>) => {
+  menus.sort((a, b) => a.menuSort - b.menuSort);
+  let rootMenus = new Array<TRouter>();
+  let pMenuObj: any = {};
+  menus.forEach((menu) => {
+    let tRouter = covertMenuToTRouter(menu);
+    if (pMenuObj[menu.id] === undefined) {
+      pMenuObj[menu.id] = [];
+    }
+    tRouter.children=pMenuObj[menu.id];
+    if (menu.pid === null) {
+      rootMenus.push(tRouter);
+    } else {
+      if (pMenuObj[menu.pid] != undefined) {
+        pMenuObj[menu.pid].push(tRouter);
+      } else {
+        pMenuObj[menu.pid] = [tRouter];
+      }
+    }
+  });
+  generateAsyncRoutes(router,rootMenus)
+};
+const covertMenuToTRouter = (menu: Menu) => {
+  let router: TRouter = {
+    name: menu.name,
+    path: menu.path,
+    meta: {
+      title: menu.title,
+      keepAlive: menu.keepAlive === 1,
+      icon: menu.icon,
+      target: menu.target !== 0 ? menu.path : undefined,
+      blank: menu.target === 2,
+      hidden: menu.hidden === 1,
+    },
+    component: menu.component,
+    children: [],
+  };
+  return router;
+};
 //构建路由
 export const generateAsyncRoutes = (router: Router, menus?: Array<any>) => {
   if (!menus) {
@@ -64,12 +104,8 @@ export const generateAsyncRoutes = (router: Router, menus?: Array<any>) => {
   resetMenuPath("", menus);
   const permissionStore = usePermissionStore();
   permissionStore.setMenus(cloneDeep(menus));
-
+  // console.log(permissionStore.getMenus)
   rootRouter.children = menus;
-
-  // const newMenus:Array<TRouter> = new Array<TRouter>()
-  // refreshMenuData2(rootRouter,newMenus)
-  // rootRouter.children = newMenus
 
   refreshMenuData(rootRouter);
   rootRouter.redirect = getLeafMenuForFShowPath(rootRouter);
@@ -106,23 +142,5 @@ const refreshMenuData = (menu: TRouter) => {
     });
   } else {
     delete menu.children;
-  }
-};
-//刷新菜单数据
-const refreshMenuData2 = (menu: TRouter,menus:Array<TRouter>) => {
-  if (menu.children != undefined && menu.children.length > 0) {
-    menu.children.forEach((item) => {
-      if (
-        item.component != undefined &&
-        item.component != "" &&
-        typeof item.component == "string"
-      ) {
-        item.component = layouts[item.component];
-      }
-      refreshMenuData2(item,menus);
-    });
-  } else {
-    delete menu.children;
-    menus.push(menu)
   }
 };

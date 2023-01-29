@@ -52,6 +52,7 @@ service.interceptors.response.use(
       message.error("网络请求超时");
       return Promise.reject(error);
     }
+    console.log(error.response)
     if (error.response && error.response.data) {
       let data = error.response.data;
       if (data.code === 401) {

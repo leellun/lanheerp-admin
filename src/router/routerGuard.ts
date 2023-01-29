@@ -1,10 +1,17 @@
 import NProgress from "nprogress"; // progress bar
-import '@/components/NProgress/nprogress.less' // progress bar custom style
+import "@/components/NProgress/nprogress.less"; // progress bar custom style
 import { ACCESS_TOKEN, PERMISSION } from "@/store/mutation-types";
-import { generateAsyncRoutes } from "@/router/basicRouter";
+import {
+  generateAsyncRoutes,
+  generateApiAsyncRoutes,
+} from "@/router/basicRouter";
 import { useUserStore } from "@/store/user";
 import { usePermissionStore } from "@/store/permission";
-import type { RouteLocationNormalizedLoaded, Router,RouteLocationMatched } from "vue-router";
+import type {
+  RouteLocationNormalizedLoaded,
+  Router,
+  RouteLocationMatched,
+} from "vue-router";
 import setting from "@/config/defaultSettings";
 
 NProgress.configure({ showSpinner: false }); // NProgress Configuration
@@ -13,16 +20,17 @@ const whiteList = ["login", "register", "registerResult"]; // 不进行拦截的
 const defaultRoutePath = "/dashboard/workplace";
 
 export const setupBeforeEach = (router: Router) => {
-  router.beforeEach((to, from, next) => {
+  router.beforeEach(async (to, from, next) => {
     NProgress.start(); // 加载进度条
     const permissionStore = usePermissionStore();
+    const userStore = useUserStore();
     if (permissionStore.getMenus.length == 0) {
-      // permissionStore.setMenus(setting.menus)
-      generateAsyncRoutes(router, setting.menus);
-      next({ path: to.path});
+      let catalogues = await userStore.getCatalogues();
+      generateApiAsyncRoutes(router, catalogues);
+      // generateAsyncRoutes(router, setting.menus);
+      next({ path: to.path });
       return;
     }
-    const userStore = useUserStore();
     if (userStore.isLogin) {
       /* has token */
       if (to.name === "login") {

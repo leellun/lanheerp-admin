@@ -110,6 +110,22 @@ export default {
             keepAlive: true,
           },
           component: "system/department",
+        },{
+          name: "menu",
+          meta: {
+            title: "菜单管理",
+            show: true,
+            keepAlive: true,
+          },
+          component: "system/menu",
+        },{
+          name: "role",
+          meta: {
+            title: "角色管理",
+            show: true,
+            keepAlive: true,
+          },
+          component: "system/role",
         },
         
       ],

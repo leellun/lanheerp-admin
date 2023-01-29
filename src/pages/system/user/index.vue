@@ -245,7 +245,7 @@ const onLoadData = (node: DataNode) => {
     }
     showTreeTip.value = true
     _getSubDepts(node.key as string).then(res => {
-      let treeNode = findSubDept(node.key as string)
+      let treeNode = findSubDept(node.key as string,treeData.value)
       treeNode!.children = []
       res.result.forEach(item => {
         item.isLeaf = item.subCount == 0
@@ -300,13 +300,20 @@ const covertDept = (item: Dept) => {
     title: item.name
   }
 }
-const findSubDept = (key: string) => {
-  for (let node of treeData.value) {
-    if (node.key === key) {
-      return node
+const findSubDept = (key: string, menus: Array<any>) => {
+    if (menus) {
+        for (let node of menus) {
+            if (node.key === key) {
+                return node
+            } else if (node.children && node.children.length > 0) {
+                let n:any = findSubDept(key, node.children)
+                if (n != null) {
+                    return n
+                }
+            }
+        }
     }
-  }
-  return null
+    return null
 }
 getSubDepts('0')
 const handleSubmit = (e?: Event) => {

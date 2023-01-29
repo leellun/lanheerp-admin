@@ -7,7 +7,7 @@
             <a-form-item label="排序" :labelCol="labelCol" :wrapperCol="wrapperCol" v-bind="validateInfos.deptSort">
                 <a-input-number v-model:value="form.deptSort" size="small" :min="0" :max="1000" />
             </a-form-item>
-            <a-form-item label="父部门" :labelCol="labelCol" :wrapperCol="wrapperCol" v-bind="validateInfos.deptId">
+            <a-form-item label="父部门" :labelCol="labelCol" :wrapperCol="wrapperCol" v-bind="validateInfos.pid">
                 <a-tree-select v-model:value="form.pid" tree-data-simple-mode style="width: 100%"
                     placeholder="请选择..." :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
                     :tree-data="orgaTree" :load-data="onLoadData">
@@ -82,7 +82,7 @@ const getSubDepts = (treeNode?: TreeSelectProps['treeData'][number], resolve?: a
     _getSubDepts(pid).then(res => {
         let tmpTreeData
         if (treeNode) {
-            let node = findSubDept(treeNode.key)
+            let node = findSubDept(treeNode.key, orgaTree.value as Array<any>)
             tmpTreeData = new Array<any>()
             node!.children = tmpTreeData
         } else {
@@ -106,11 +106,16 @@ const getSubDepts = (treeNode?: TreeSelectProps['treeData'][number], resolve?: a
     })
 }
 getSubDepts()
-const findSubDept = (key: string) => {
-    if (orgaTree.value) {
-        for (let node of orgaTree.value) {
+const findSubDept = (key: string, menus: Array<any>) => {
+    if (menus) {
+        for (let node of menus) {
             if (node.key === key) {
                 return node
+            } else if (node.children && node.children.length > 0) {
+                let n:any = findSubDept(key, node.children)
+                if (n != null) {
+                    return n
+                }
             }
         }
     }

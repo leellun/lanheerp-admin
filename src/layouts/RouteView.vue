@@ -4,10 +4,10 @@
       <component :is="Component" />
     </keep-alive>
   </router-view>
-  <router-view v-else/>
+  <router-view v-else />
 </template>
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import defaultSettings from '@/config/defaultSettings'
 import events from '@/utils/eventBus'
@@ -18,9 +18,15 @@ const permissionStore = usePermissionStore()
 const route: any = useRoute()
 const cacheViewsRef = ref()
 const isKeep = computed(() => {
-  const status = defaultSettings.multiTab && route.meta.keepAlive
+  // const status = defaultSettings.multiTab && route.meta.keepAlive
+  const status = defaultSettings.multiTab
   return status
 });
+watch(() => route.fullPath, (val) => {
+  if (!route.meta.keepAlive) {
+    events.emit("routeview.close", val)
+  }
+})
 events.once('routeview.close', (fullPath: any) => {
   const filePath = getMenuFilePath(permissionStore.getMenus, fullPath)
   if (cacheViewsRef.value != null) {

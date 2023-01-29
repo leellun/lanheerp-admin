@@ -196,7 +196,7 @@ const getSubDepts = (treeNode?: TreeSelectProps['treeData'][number], resolve?: a
   _getSubDepts(pid).then(res => {
     let tmpTreeData
     if (treeNode) {
-      let node = findSubDept(treeNode.key)
+      let node = findSubDept(treeNode.key, orgaTree.value as Array<any>)
       tmpTreeData = new Array<any>()
       node!.children = tmpTreeData
     } else {
@@ -251,15 +251,20 @@ const getAllJobs = () => {
     jobList.value.push(...res.result)
   })
 }
-const findSubDept = (key: string) => {
-  if (orgaTree.value) {
-    for (let node of orgaTree.value) {
-      if (node.key === key) {
-        return node
-      }
+const findSubDept = (key: string, menus: Array<any>) => {
+    if (menus) {
+        for (let node of menus) {
+            if (node.key === key) {
+                return node
+            } else if (node.children && node.children.length > 0) {
+                let n:any = findSubDept(key, node.children)
+                if (n != null) {
+                    return n
+                }
+            }
+        }
     }
-  }
-  return null
+    return null
 }
 getSubDepts()
 getAllRoles()

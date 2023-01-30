@@ -74,10 +74,10 @@ service.interceptors.response.use(
           },
         });
       } else {
-        message.error(data.msg);
+        return Promise.reject(data.msg);
       }
     } else {
-      message.error("接口请求失败");
+      return Promise.reject("接口请求失败");
     }
     return Promise.reject(error);
   }
@@ -102,6 +102,7 @@ export const httpRequestWithMsg = <T = any, R = AxiosResponse<T>, D = any>(
         resolve(res);
       })
       .catch((err) => {
+        message.error(err);
         reject(err);
       });
   });

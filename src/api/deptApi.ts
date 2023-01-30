@@ -21,13 +21,13 @@ export interface DeptSearch {
 }
 export const _getSubDepts = (pid: string) => {
   return httpRequest<any, Array<Dept>>({
-    url: `/user/dept/sub/${pid}`,
+    url: `/system/dept/sub/${pid}`,
     method: "get",
   });
 };
 export const _searchDepts = (name: string) => {
   return httpRequest<any, Array<Dept>>({
-    url: `/user/dept/search`,
+    url: `/system/dept/search`,
     method: "get",
     params: {
       name,
@@ -36,48 +36,48 @@ export const _searchDepts = (name: string) => {
 };
 export const _getPageDepts = (data: DeptSearch) => {
   return httpRequest<any, Page<Dept>>({
-    url: `/user/dept/list`,
+    url: `/system/dept/list`,
     method: "post",
     data,
   });
 };
 export const _getDept = (id: string) => {
   return httpRequest<any, Dept>({
-    url: `/user/dept/${id}`,
+    url: `/system/dept/${id}`,
     method: "get",
   });
 };
 export const _addDept = (data: Dept) => {
   return httpRequestWithMsg<any, any>({
-    url: `/user/dept`,
+    url: `/system/dept`,
     method: "post",
     data,
   });
 };
 export const _updateDept = (data: Dept) => {
   return httpRequestWithMsg<any, any>({
-    url: `/user/dept`,
+    url: `/system/dept`,
     method: "put",
     data,
   });
 };
 export const _updateDeptSort = (id: string, deptSort: number) => {
   return httpRequest<any, any>({
-    url: `/user/dept/sort/${id}`,
+    url: `/system/dept/sort/${id}`,
     method: "put",
     params: { deptSort },
   });
 };
 export const _deleteDept = (data: string[]) => {
   return httpRequestWithMsg<any, any>({
-    url: `/user/dept`,
+    url: `/system/dept`,
     method: "delete",
     data,
   });
 };
 export const _enableDept = (id: string, enable: number) => {
   return httpRequestWithMsg<any, any>({
-    url: `/user/dept/enable/${id}`,
+    url: `/system/dept/enable/${id}`,
     method: "put",
     params: { enable },
   });

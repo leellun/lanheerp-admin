@@ -15,47 +15,47 @@ export interface JobSearch {
 }
 export const _getAllJobs = () => {
   return httpRequest<any, Array<Job>>({
-    url: "/user/job/all",
+    url: "/system/job/all",
     method: "get",
   });
 };
 export const _getPageJobs = (data: JobSearch) => {
   return httpRequest<any, Page<Job>>({
-    url: "/user/job/list",
+    url: "/system/job/list",
     method: "post",
     data,
   });
 };
 export const _getJob = (id: string) => {
   return httpRequest<any, Job>({
-    url: `/user/job/${id}`,
+    url: `/system/job/${id}`,
     method: "get",
   });
 };
 export const _addJob = (data: Job) => {
   return httpRequestWithMsg<any, any>({
-    url: `/user/job`,
+    url: `/system/job`,
     method: "post",
     data,
   });
 };
 export const _updateJob = (data: Job) => {
   return httpRequestWithMsg<any, any>({
-    url: `/user/job`,
+    url: `/system/job`,
     method: "put",
     data,
   });
 };
 export const _deleteJob = (data: string[]) => {
   return httpRequestWithMsg<any, any>({
-    url: `/user/job`,
+    url: `/system/job`,
     method: "delete",
     data,
   });
 };
 export const _enableJob = (id: string, enable: number) => {
   return httpRequestWithMsg<any, any>({
-    url: `/user/job/enable/${id}`,
+    url: `/system/job/enable/${id}`,
     method: "put",
     params: { enable },
   });

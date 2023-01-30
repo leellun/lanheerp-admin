@@ -67,48 +67,48 @@ export const _auth_login = (username: string, password: string) => {
 
 export const _getUsersPage = (data: UserSearch) => {
   return httpRequest<any, Page<UserItem>>({
-    url: "/user/user/list",
+    url: "/system/user/list",
     method: "post",
     data,
   });
 };
 export const _addUser = (data: UserRequest) => {
   return httpRequest<any, any>({
-    url: "/user/user",
+    url: "/system/user",
     method: "post",
     data,
   });
 };
 export const _updateUser = (data: UserRequest) => {
   return httpRequest<any, any>({
-    url: "/user/user",
+    url: "/system/user",
     method: "put",
     data,
   });
 };
 export const _enableUser = (id: string, enable: number) => {
   return httpRequestWithMsg<any, any>({
-    url: `/user/user/enable/${id}`,
+    url: `/system/user/enable/${id}`,
     method: "put",
     params: { enable },
   });
 };
 export const _getUser = (id: string) => {
   return httpRequest<any, UserRequest>({
-    url: `/user/user/${id}`,
+    url: `/system/user/${id}`,
     method: "get",
   });
 };
 export const _deleteUser = (data: string[]) => {
   return httpRequest<any, any>({
-    url: `/user/user`,
+    url: `/system/user`,
     method: "delete",
     data
   });
 };
 export const _resetPass = (id: string) => {
   return httpRequestWithMsg<any, any>({
-    url: `/user/user/resetPass/${id}`,
+    url: `/system/user/resetPass/${id}`,
     method: "put"
   });
 };

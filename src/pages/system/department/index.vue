@@ -59,7 +59,7 @@
                             @change="handleEnableChange(record.id, record.enabled === 0 ? 1 : 0)" v-permission="['dept:update']"/>
                         <a-divider type="vertical" v-permission="['dept:update']"/>
                         <a-popconfirm title="是否删除部门？" ok-text="是" cancel-text="否"
-                            @confirm="() => handleDeleteRecord([record.id])" v-permission="['dept:delete']">
+                            @confirm="() => handleDeleteRecord([record.id])">
                             <a v-permission="['dept:delete']">删除</a>
                         </a-popconfirm>
                     </span>

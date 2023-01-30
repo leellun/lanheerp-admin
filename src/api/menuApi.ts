@@ -27,66 +27,66 @@ export interface MenuSearch {
 }
 export const _getPageMenus = (params: MenuSearch) => {
   return httpRequest<any, Page<Menu>>({
-    url: `/user/menu`,
+    url: `/system/menu`,
     method: "get",
     params,
   });
 };
 export const _getCatalogues = async () => {
   return httpRequest<any, Array<Menu>>({
-    url: `/user/menu/catalogue`,
+    url: `/system/menu/catalogue`,
     method: "get",
   });
 };
 export const _getUserPermissions = async () => {
   return httpRequest<any, Array<string>>({
-    url: `/user/menu/permission`,
+    url: `/system/menu/permission`,
     method: "get",
   });
 };
 export const _getMenu = (id: string) => {
   return httpRequest<any, Menu>({
-    url: `/user/menu/${id}`,
+    url: `/system/menu/${id}`,
     method: "get",
   });
 };
 export const _getSubMenus = (pid: string) => {
   return httpRequest<any, Array<Menu>>({
-    url: `/user/menu/sub/${pid}`,
+    url: `/system/menu/sub/${pid}`,
     method: "get",
   });
 };
 export const _addMenu = (data: Menu) => {
   return httpRequestWithMsg<any, any>({
-    url: `/user/menu`,
+    url: `/system/menu`,
     method: "post",
     data,
   });
 };
 export const _updateMenu = (data: Menu) => {
   return httpRequestWithMsg<any, any>({
-    url: `/user/menu`,
+    url: `/system/menu`,
     method: "put",
     data,
   });
 };
 export const _updateMenuSort = (id: string, menuSort: number) => {
   return httpRequest<any, any>({
-    url: `/user/menu/sort/${id}`,
+    url: `/system/menu/sort/${id}`,
     method: "put",
     params: { menuSort },
   });
 };
 export const _deleteMenu = (data: string[]) => {
   return httpRequestWithMsg<any, any>({
-    url: `/user/menu`,
+    url: `/system/menu`,
     method: "delete",
     data,
   });
 };
 export const _enableMenu = (id: string, enable: number) => {
   return httpRequestWithMsg<any, any>({
-    url: `/user/menu/enable/${id}`,
+    url: `/system/menu/enable/${id}`,
     method: "put",
     params: { enable },
   });

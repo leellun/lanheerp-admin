@@ -36,9 +36,9 @@
                         <a-switch :checked="record.enabled === 1" checked-children="启用" un-checked-children="禁用"
                             @change="handleEnableChange(record, record.enabled === 0 ? 1 : 0)"  v-permission="['menu:update']"/>
                         <a-divider type="vertical"  v-permission="['menu:update']"/>
-                        <a-popconfirm title="是否删除部门？" ok-text="是" cancel-text="否"
-                            @confirm="() => handleDeleteRecord(record)" v-permission="['menu:delete']">
-                            <a>删除</a>
+                        <a-popconfirm title="是否删除菜单？" ok-text="是" cancel-text="否"
+                            @confirm="() => handleDeleteRecord(record)">
+                            <a v-permission="['menu:delete']">删除</a>
                         </a-popconfirm>
                         <a-divider type="vertical"  v-permission="['menu:delete']"/>
                         <a @click="(e: Event) => handleAppendChildMenu(record, e)" v-permission="['menu:update']">追加</a>

@@ -73,8 +73,8 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import { message, TreeSelectProps, Form } from 'ant-design-vue';
-import type { Menu } from '@/api/menuApi'
-import { _addMenu, _getMenu, _updateMenu, _getSubMenus } from '@/api/menuApi'
+import type { Menu } from '@/api/system/menuApi'
+import { _addMenu, _getMenu, _updateMenu, _getSubMenus } from '@/api/system/menuApi'
 const emit = defineEmits(["update:visible", "ok", "cancel"])
 const useForm = Form.useForm
 const props = withDefaults(defineProps<{
@@ -188,7 +188,7 @@ const getSubMenus = (treeNode?: TreeSelectProps['treeData'][number], resolve?: a
         } else {
             tmpTreeData = orgaTree.value
         }
-        let result: Array<Menu> | Array<any> = res.result
+        let result: Array<Menu> | Array<any> = res.data
         result.forEach(item => {
             item.isLeaf = item.subCount == 0
             tmpTreeData?.push({
@@ -268,7 +268,7 @@ const handleCancel = () => {
 }
 const getMenu = (id: string) => {
     _getMenu(id).then(res => {
-        let result: Menu | any = res.result
+        let result: Menu | any = res.data
         Object.keys(result).forEach(key => {
             if (form.hasOwnProperty(key)) {
                 form[key] = result[key]

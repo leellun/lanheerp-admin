@@ -56,8 +56,8 @@
                             v-permission="['job:update']" />
                         <a-divider type="vertical" v-permission="['job:update']" />
                         <a-popconfirm title="是否删除岗位？" ok-text="是" cancel-text="否"
-                            @confirm="() => handleDeleteRecord([record.id])" v-permission="['job:delete']">
-                            <a>删除</a>
+                            @confirm="() => handleDeleteRecord([record.id])">
+                            <a v-permission="['job:delete']">删除</a>
                         </a-popconfirm>
                     </span>
                 </template>
@@ -68,8 +68,8 @@
 </template>
 <script setup lang="ts"  >
 import { ref, reactive } from 'vue'
-import type { JobSearch, Job } from '@/api/jobApi'
-import { _getPageJobs, _deleteJob, _enableJob } from '@/api/jobApi'
+import type { JobSearch, Job } from '@/api/system/jobApi'
+import { _getPageJobs, _deleteJob, _enableJob } from '@/api/system/jobApi'
 import { Form, Modal } from 'ant-design-vue';
 import JobModal from './modals/JobModal.vue';
 const jobId = ref<string>()
@@ -117,10 +117,10 @@ const getPageJobs = () => {
     loading.value = true
     formRef.pageSize = pagination.pageSize
     _getPageJobs(formRef as JobSearch).then(res => {
-        pagination.pageNo = res.result.current
-        pagination.pageSize = res.result.size
-        pagination.total = res.result.total
-        data.value = res.result.records
+        pagination.pageNo = res.data.current
+        pagination.pageSize = res.data.size
+        pagination.total = res.data.total
+        data.value = res.data.records
         data.value.forEach(item => {
             item.key = item.id
         })

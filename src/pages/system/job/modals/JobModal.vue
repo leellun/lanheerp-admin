@@ -13,8 +13,8 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
 import { Form } from 'ant-design-vue';
-import type { Job } from '@/api/jobApi'
-import { _addJob, _getJob, _updateJob } from '@/api/jobApi'
+import type { Job } from '@/api/system/jobApi'
+import { _addJob, _getJob, _updateJob } from '@/api/system/jobApi'
 const emit = defineEmits(["update:visible", "ok", "cancel"])
 const useForm = Form.useForm
 const props = withDefaults(defineProps<{
@@ -80,7 +80,7 @@ const handleCancel = () => {
 }
 const getJob = (id: string) => {
     _getJob(id).then(res => {
-        let result = res.result
+        let result = res.data
         form.id = result.id
         form.name = result.name
         form.jobSort = result.jobSort

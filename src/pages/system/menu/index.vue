@@ -53,8 +53,8 @@
 <script setup lang="ts"  >
 import { ref, reactive } from 'vue'
 import { Modal } from 'ant-design-vue';
-import type { MenuSearch, Menu } from '@/api/menuApi'
-import { _getPageMenus, _getSubMenus, _deleteMenu, _updateMenuSort, _enableMenu } from '@/api/menuApi'
+import type { MenuSearch, Menu } from '@/api/system/menuApi'
+import { _getPageMenus, _getSubMenus, _deleteMenu, _updateMenuSort, _enableMenu } from '@/api/system/menuApi'
 import MenuModal from './modals/MenuModal.vue';
 const menuId = ref<string>()
 const menuPid = ref<string>()
@@ -127,10 +127,10 @@ const getPageMenus = () => {
     loading.value = true
     formRef.pageSize = pagination.pageSize
     _getPageMenus(formRef as MenuSearch).then(res => {
-        pagination.pageNo = res.result.current
-        pagination.pageSize = res.result.size
-        pagination.total = res.result.total
-        data.value = res.result.records
+        pagination.pageNo = res.data.current
+        pagination.pageSize = res.data.size
+        pagination.total = res.data.total
+        data.value = res.data.records
         data.value.forEach(item => {
             item.key = item.id
             if (item.subCount > 0) {
@@ -149,7 +149,7 @@ const handleTableChange = (page: any, filters: any, sorter: any) => {
 const handleExpand = (expanded: boolean, record: Menu) => {
     if (expanded && record.subCount > 0 && record.children.length == 0) {
         _getSubMenus(record.id).then(res => {
-            let result = res.result as Array<Menu> | Array<any>
+            let result = res.data as Array<Menu> | Array<any>
             result.forEach(item => {
                 item.key = item.id
                 if (item.subCount > 0) {

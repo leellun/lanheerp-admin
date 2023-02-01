@@ -6,7 +6,7 @@ import { getRoutePages } from "@/utils/batchImportFiles";
 import { usePermissionStore } from "@/store/permission";
 import { cloneDeep } from "lodash";
 import { AnyFn } from "@vueuse/core";
-import { Menu } from "@/api/menuApi";
+import { Menu } from "@/api/system/menuApi";
 
 const layouts: { [x: string]: Function } = {
   BasicLayout,

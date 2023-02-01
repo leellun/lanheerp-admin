@@ -1,6 +1,6 @@
 import { TRouter } from "@/router/types";
 import { defineStore } from "pinia";
-import { _getCatalogues,_getUserPermissions } from "@/api/menuApi";
+import { _getCatalogues,_getUserPermissions } from "@/api/system/menuApi";
 interface PermissionState {
   menus: Array<TRouter>;
   tagPaths: Array<string>;
@@ -29,7 +29,7 @@ export const usePermissionStore = defineStore("permission", {
     async getCatalogues() {
       try {
         let res = await _getCatalogues();
-        return res.result;
+        return res.data;
       } catch (e) {
         return [];
       }
@@ -37,7 +37,7 @@ export const usePermissionStore = defineStore("permission", {
     async getUserPermissions() {
       try {
         let res = await _getUserPermissions();
-        this.permissions= res.result;
+        this.permissions= res.data;
       } catch (e) {
       }
     },

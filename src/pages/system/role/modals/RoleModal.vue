@@ -16,8 +16,8 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
 import { Form } from 'ant-design-vue';
-import type { Role } from '@/api/roleApi'
-import { _addRole, _getRole, _updateRole } from '@/api/roleApi'
+import type { Role } from '@/api/system/roleApi'
+import { _addRole, _getRole, _updateRole } from '@/api/system/roleApi'
 const emit = defineEmits(["update:visible", "ok", "cancel"])
 const useForm = Form.useForm
 const props = withDefaults(defineProps<{
@@ -84,7 +84,7 @@ const handleCancel = () => {
 }
 const getRole = (id: string) => {
     _getRole(id).then(res => {
-        let result = res.result
+        let result = res.data
         form.id = result.id
         form.name = result.name
         form.code = result.code

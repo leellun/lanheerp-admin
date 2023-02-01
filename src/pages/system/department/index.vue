@@ -72,8 +72,8 @@
 <script setup lang="ts"  >
 import { ref, reactive } from 'vue'
 import { Form, Modal } from 'ant-design-vue';
-import type { DeptSearch, Dept } from '@/api/deptApi'
-import { _getPageDepts, _deleteDept, _enableDept, _updateDeptSort, _getSubDepts } from '@/api/deptApi'
+import type { DeptSearch, Dept } from '@/api/system/deptApi'
+import { _getPageDepts, _deleteDept, _enableDept, _updateDeptSort, _getSubDepts } from '@/api/system/deptApi'
 import DeptModal from './modals/DeptModal.vue';
 const deptId = ref<string>()
 const modalVisible = ref<boolean>(false)
@@ -126,10 +126,10 @@ const getPageJobs = () => {
     loading.value = true
     formRef.pageSize = pagination.pageSize
     _getPageDepts(formRef as DeptSearch).then(res => {
-        pagination.pageNo = res.result.current
-        pagination.pageSize = res.result.size
-        pagination.total = res.result.total
-        data.value = res.result.records
+        pagination.pageNo = res.data.current
+        pagination.pageSize = res.data.size
+        pagination.total = res.data.total
+        data.value = res.data.records
         data.value.forEach(item => {
             item.key = item.id
             if (item.subCount > 0) {
@@ -148,7 +148,7 @@ const handleTableChange = (page: any, filters: any, sorter: any) => {
 const handleExpand = (expanded: boolean, record: Dept) => {
     if (expanded && record.subCount > 0 && record.children.length == 0) {
         _getSubDepts(record.id).then(res => {
-            let result = res.result as Array<Dept> | Array<any>
+            let result = res.data as Array<Dept> | Array<any>
             result.forEach(item => {
                 item.key = item.id
                 if (item.subCount > 0) {

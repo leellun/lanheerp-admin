@@ -23,8 +23,8 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import { message, TreeSelectProps, Form } from 'ant-design-vue';
-import type { Dept } from '@/api/deptApi'
-import { _addDept, _getDept, _updateDept, _getSubDepts } from '@/api/deptApi'
+import type { Dept } from '@/api/system/deptApi'
+import { _addDept, _getDept, _updateDept, _getSubDepts } from '@/api/system/deptApi'
 const emit = defineEmits(["update:visible", "ok", "cancel"])
 const useForm = Form.useForm
 const props = withDefaults(defineProps<{
@@ -88,7 +88,7 @@ const getSubDepts = (treeNode?: TreeSelectProps['treeData'][number], resolve?: a
         } else {
             tmpTreeData = orgaTree.value
         }
-        res.result.forEach(item => {
+        res.data.forEach(item => {
             item.isLeaf = item.subCount == 0
             tmpTreeData?.push({
                 isLeaf: item.subCount === 0,
@@ -142,7 +142,7 @@ const handleCancel = () => {
 }
 const getDept = (id: string) => {
     _getDept(id).then(res => {
-        let result = res.result
+        let result = res.data
         form.id = result.id
         form.name = result.name
         form.parentName = result.parentName

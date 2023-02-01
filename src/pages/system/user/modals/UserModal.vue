@@ -51,13 +51,13 @@
 </template>
 <script setup lang="ts">
 import { message, TreeSelectProps,Form } from 'ant-design-vue';
-import type { UserRequest } from '@/api/userApi'
-import { _addUser, _getUser, _updateUser } from '@/api/userApi'
-import { _getSubDepts } from '@/api/deptApi'
-import type { Role } from '@/api/roleApi'
-import { _getAllRoles } from '@/api/roleApi'
-import type { Job } from '@/api/jobApi'
-import { _getAllJobs } from '@/api/jobApi'
+import type { UserRequest } from '@/api/system/userApi'
+import { _addUser, _getUser, _updateUser } from '@/api/system/userApi'
+import { _getSubDepts } from '@/api/system//deptApi'
+import type { Role } from '@/api/system/roleApi'
+import { _getAllRoles } from '@/api/system/roleApi'
+import type { Job } from '@/api/system/jobApi'
+import { _getAllJobs } from '@/api/system/jobApi'
 import { ref, reactive, watch } from 'vue'
 const useForm = Form.useForm
 const props = withDefaults(defineProps<{
@@ -202,7 +202,7 @@ const getSubDepts = (treeNode?: TreeSelectProps['treeData'][number], resolve?: a
     } else {
       tmpTreeData = orgaTree.value
     }
-    res.result.forEach(item => {
+    res.data.forEach(item => {
       item.isLeaf = item.subCount == 0
       tmpTreeData?.push({
         isLeaf: item.subCount === 0,
@@ -243,12 +243,12 @@ if (props.id) {
 }
 const getAllRoles = () => {
   _getAllRoles().then(res => {
-    roleList.value.push(...res.result)
+    roleList.value.push(...res.data)
   })
 }
 const getAllJobs = () => {
   _getAllJobs().then(res => {
-    jobList.value.push(...res.result)
+    jobList.value.push(...res.data)
   })
 }
 const findSubDept = (key: string, menus: Array<any>) => {
@@ -274,13 +274,13 @@ const handleOk = () => {
   validate().then(async () => {
     if (props.id) {
       _updateUser(form as UserRequest).then(res => {
-        message.success(res.msg)
+        message.success(res.message)
         emit("update:visible", false)
         emit("ok")
       })
     } else {
       _addUser(form as UserRequest).then(res => {
-        message.success(res.msg)
+        message.success(res.message)
         emit("update:visible", false)
         emit("ok")
       })

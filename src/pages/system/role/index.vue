@@ -54,8 +54,8 @@
                             @change="handleEnableChange(record, record.enabled === 0 ? 1 : 0)"  v-permission="['role:update']"/>
                         <a-divider type="vertical" v-permission="['role:update']"/>
                         <a-popconfirm title="是否删除角色？" ok-text="是" cancel-text="否"
-                            @confirm="() => handleDeleteRecord([record.id])"  v-permission="['role:delete']">
-                            <a>删除</a>
+                            @confirm="() => handleDeleteRecord([record.id])">
+                            <a v-permission="['role:delete']">删除</a>
                         </a-popconfirm>
                         <a-divider type="vertical" v-permission="['role:delete']"/>
                         <a @click="(e?: Event) => handlePermission(e, record.id)" v-permission="['role:update']">权限设置</a>
@@ -69,8 +69,8 @@
 </template>
 <script setup lang="ts"  >
 import { ref, reactive } from 'vue'
-import type { RoleSearch, Role } from '@/api/roleApi'
-import { _getRolesPage, _deleteRole, _enableRole } from '@/api/roleApi'
+import type { RoleSearch, Role } from '@/api/system/roleApi'
+import { _getRolesPage, _deleteRole, _enableRole } from '@/api/system/roleApi'
 import { Form, Modal } from 'ant-design-vue';
 import RoleModal from './modals/RoleModal.vue';
 import MenuPermission from '@/pages/system/menu/modals/MenuPermission.vue';
@@ -120,10 +120,10 @@ const getPageRoles = () => {
     loading.value = true
     formRef.pageSize = pagination.pageSize
     _getRolesPage(formRef as RoleSearch).then(res => {
-        pagination.pageNo = res.result.current
-        pagination.pageSize = res.result.size
-        pagination.total = res.result.total
-        data.value = res.result.records
+        pagination.pageNo = res.data.current
+        pagination.pageSize = res.data.size
+        pagination.total = res.data.total
+        data.value = res.data.records
         data.value.forEach(item => {
             item.key = item.id
         })

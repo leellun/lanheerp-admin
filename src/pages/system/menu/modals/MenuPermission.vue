@@ -25,9 +25,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import type { DataNode } from 'ant-design-vue/lib/tree';
-import type { Menu } from '@/api/menuApi'
-import { _getSubMenus } from '@/api/menuApi'
-import { _addMenuPermission, _getMenuPermission } from '@/api/roleApi'
+import type { Menu } from '@/api/system/menuApi'
+import { _getSubMenus } from '@/api/system/menuApi'
+import { _addMenuPermission, _getMenuPermission } from '@/api/system/roleApi'
 const emit = defineEmits(["update:visible", "ok", "cancel"])
 const props = withDefaults(defineProps<{
     visible: boolean,
@@ -67,7 +67,7 @@ const onLoadData = (node: DataNode) => {
 const getSubMenus = (key: string, arr: Array<any>, resolve?: any) => {
     showTreeTip.value = true
     _getSubMenus(key).then(res => {
-        let result: Array<Menu> | Array<any> = res.result
+        let result: Array<Menu> | Array<any> = res.data
         result.forEach(item => {
             item.isLeaf = item.subCount == 0
             arr.push({
@@ -102,7 +102,7 @@ const findSubMenu = (key: string, menus: Array<any>) => {
 const getMenuPermission = () => {
     _getMenuPermission(props.id).then(res => {
         checkedKeys.value = []
-        checkedKeys.value.push(...res.result)
+        checkedKeys.value.push(...res.data)
     })
 }
 getMenuPermission()

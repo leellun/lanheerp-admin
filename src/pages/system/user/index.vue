@@ -91,13 +91,13 @@
                   @change="handleEnableChange(record.id, record.enabled === 0 ? 1 : 0)"  v-permission="['user:update']"/>
                 <a-divider type="vertical"  v-permission="['user:update']"/>
                 <a-popconfirm title="是否删除用户？" ok-text="是" cancel-text="否" @confirm="() => deleteUser([record.id])"
-                  v-if="record.canDeleted === 1" v-permission="['user:delete']">
-                  <a>删除</a>
+                  v-if="record.canDeleted === 1" >
+                  <a v-permission="['user:delete']">删除</a>
                 </a-popconfirm>
                 <a v-else="record.username==='admin'" style="visibility:hidden">删除</a>
                 <a-divider type="vertical"  v-permission="['user:delete']"/>
-                <a-popconfirm title="是否重置密码？" ok-text="是" cancel-text="否" @confirm="() => resetPassword(record.id)" v-permission="['user:update']">
-                  <a>重置密码</a>
+                <a-popconfirm title="是否重置密码？" ok-text="是" cancel-text="否" @confirm="() => resetPassword(record.id)" >
+                  <a v-permission="['user:update']">重置密码</a>
                 </a-popconfirm>
 
               </span>
@@ -114,10 +114,10 @@
 import { ref, reactive } from 'vue'
 import { message, Modal, TreeProps, Form } from 'ant-design-vue'
 import type { DataNode } from 'ant-design-vue/lib/tree';
-import { _getSubDepts, _searchDepts } from '@/api/deptApi'
-import type { Dept } from '@/api/deptApi'
-import { _getUsersPage, _deleteUser, _resetPass, _enableUser } from '@/api/userApi'
-import type { UserSearch, UserItem } from '@/api/userApi'
+import { _getSubDepts, _searchDepts } from '@/api/system//deptApi'
+import type { Dept } from '@/api/system//deptApi'
+import { _getUsersPage, _deleteUser, _resetPass, _enableUser } from '@/api/system/userApi'
+import type { UserSearch, UserItem } from '@/api/system/userApi'
 import type { Dayjs } from 'dayjs';
 import UserModal from './modals/UserModal.vue'
 
@@ -229,7 +229,7 @@ const onDeptChange = () => {
         checkedKeys.value = []
         expandedKeys.value = []
         let tmpTreeData: DataNode[] = [];
-        covertDepts(res.result, tmpTreeData)
+        covertDepts(res.data, tmpTreeData)
         treeData.value = tmpTreeData
       })
     }
@@ -247,7 +247,7 @@ const onLoadData = (node: DataNode) => {
     _getSubDepts(node.key as string).then(res => {
       let treeNode = findSubDept(node.key as string,treeData.value)
       treeNode!.children = []
-      res.result.forEach(item => {
+      res.data.forEach(item => {
         item.isLeaf = item.subCount == 0
         treeNode!.children?.push({
           isLeaf: item.subCount === 0,
@@ -270,7 +270,7 @@ const getSubDepts = (pid: string) => {
     let tmpTreeData: DataNode[];
     treeData.value.splice(0, treeData.value.length)
     tmpTreeData = treeData.value;
-    res.result.forEach(item => {
+    res.data.forEach(item => {
       item.isLeaf = item.subCount == 0
       tmpTreeData?.push({
         isLeaf: item.subCount === 0,
@@ -333,10 +333,10 @@ const getUsersPage = () => {
   formRef.pageSize = pagination.pageSize
   loading.value = true
   _getUsersPage(formRef as UserSearch).then(res => {
-    pagination.pageNo = res.result.current
-    pagination.pageSize = res.result.size
-    pagination.total = res.result.total
-    data.value = res.result.records
+    pagination.pageNo = res.data.current
+    pagination.pageSize = res.data.size
+    pagination.total = res.data.total
+    data.value = res.data.records
     data.value.forEach(item => {
       item.key = item.id
     })
@@ -383,7 +383,7 @@ const deleteUsers = () => {
 }
 const deleteUser = (ids: string[]) => {
   _deleteUser(ids).then(res => {
-    message.success(res.msg)
+    message.success(res.message)
     getUsersPage()
   })
 }

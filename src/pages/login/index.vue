@@ -35,7 +35,7 @@ import { Form } from 'ant-design-vue'
 import { Router, useRouter } from 'vue-router'
 import { generateAsyncRoutes } from "@/router/basicRouter";
 import setting from "@/config/defaultSettings";
-import { _auth_login } from '@/api/userApi'
+import { _auth_login } from '@/api/system/userApi'
 import secret from "@/utils/secret"
 const userStore = useUserStore();
 const router: Router = useRouter();

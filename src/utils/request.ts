@@ -98,7 +98,7 @@ export const httpRequestWithMsg = <T = any, R = AxiosResponse<T>, D = any>(
     let promise = service<T, RestResponse<R>>(config);
     promise
       .then((res) => {
-        message.success(res.msg);
+        message.success(res.message);
         resolve(res);
       })
       .catch((err) => {

@@ -227,15 +227,15 @@ const handleOk = () => {
     if (form.type === 1) {
         fields.push(...["target"])
         if (form.target === 0) {
-            if (form.path === undefined || form.path.trim() === '') {
-                if (form.name === undefined || form.name.trim() === '' || form.component === undefined || form.component.trim() === '') {
+            if (form.path === undefined || form.path === null || form.path.trim() === '') {
+                if (form.name === undefined || form.name === null || form.name.trim() === '' || form.component === undefined || form.component === null || form.component.trim() === '') {
                     message.error("组件名、组件或者地址必须选择其一")
                     return
                 }
             }
             fields.push(...["keepAlive"])
         } else {
-            if (form.path === undefined || form.path.trim() === '') {
+            if (form.path === undefined || form.path === null || form.path.trim() === '') {
                 message.error("请输入地址")
                 return;
             }

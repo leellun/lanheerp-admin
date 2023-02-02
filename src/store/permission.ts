@@ -5,7 +5,7 @@ interface PermissionState {
   menus: Array<TRouter>;
   tagPaths: Array<string>;
   permissions: Array<string>;
-  isInitMenu: boolean;
+  isRouterMenuCheck: boolean;
 }
 export const usePermissionStore = defineStore("permission", {
   state: (): PermissionState => {
@@ -13,7 +13,7 @@ export const usePermissionStore = defineStore("permission", {
       menus: [],
       tagPaths:[],
       permissions:[],
-      isInitMenu: false,
+      isRouterMenuCheck: false,
     };
   },
   getters: {
@@ -22,9 +22,13 @@ export const usePermissionStore = defineStore("permission", {
     },
   },
   actions: {
+    isHasRouterMenu(){
+      let check = this.isRouterMenuCheck
+      this.isRouterMenuCheck = true
+      return check;
+    },
     setMenus(menus: Array<TRouter>) {
       this.menus = menus;
-      this.isInitMenu = true;
     },
     async getCatalogues() {
       try {

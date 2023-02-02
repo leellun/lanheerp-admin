@@ -20,7 +20,7 @@ export const setupBeforeEach = (router: Router) => {
     const permissionStore = usePermissionStore();
     const userStore = useUserStore();
     if (userStore.isLogin) {
-      if (permissionStore.getMenus.length == 0) {
+      if (!permissionStore.isHasRouterMenu()) {
         let catalogues = await permissionStore.getCatalogues();
         generateApiAsyncRoutes(router, catalogues);
         permissionStore.getUserPermissions()

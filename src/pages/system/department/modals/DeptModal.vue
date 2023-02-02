@@ -88,7 +88,7 @@ const getSubDepts = (treeNode?: TreeSelectProps['treeData'][number], resolve?: a
         } else {
             tmpTreeData = orgaTree.value
         }
-        res.data.forEach(item => {
+        res.result.forEach(item => {
             item.isLeaf = item.subCount == 0
             tmpTreeData?.push({
                 isLeaf: item.subCount === 0,
@@ -142,7 +142,7 @@ const handleCancel = () => {
 }
 const getDept = (id: string) => {
     _getDept(id).then(res => {
-        let result = res.data
+        let result = res.result
         form.id = result.id
         form.name = result.name
         form.parentName = result.parentName

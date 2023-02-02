@@ -139,6 +139,9 @@ const refreshMenuData = (menu: TRouter) => {
         typeof item.component == "string"
       ) {
         item.component = layouts[item.component];
+        if (item.component === undefined) {
+          item.meta!.hidden = true;
+        }
       }
       refreshMenuData(item);
     });

@@ -44,6 +44,7 @@ export interface Product {
   detailHtml: string;
   detailMobileHtml: string;
   promotionStartTime: string;
+  promotionEndTime: string;
   brandName: string;
   productCategoryName: string;
   stock: number;

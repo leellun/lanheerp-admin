@@ -169,7 +169,6 @@ const refreshProductAttrPics = () => {
   let sptData = JSON.parse(sptDataStr)
   sptData.forEach((item: any) => {
     let attr = findProductAttribute(item.key)
-    console.log(attr)
     if (attr != null && attr.hasPic === 1) {
       let attrPic = findProductAttrPic(item.key)
       if (attrPic === null) {

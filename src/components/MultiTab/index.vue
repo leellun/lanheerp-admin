@@ -74,7 +74,6 @@ permissionStore.tagPaths = fullPathList
 selectedLastPath()
 
 const onEdit = (targetKey: string, action: any) => {
-  console.log(targetKey)
   remove(targetKey)
 }
 const onRefreshPage = (targetKey:string)=>{

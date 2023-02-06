@@ -229,7 +229,6 @@ const handleOk = (pid: string) => {
 };
 const refreshParentMenu = (pid: string, add: boolean) => {
     let menu = findMenu(pid, data.value)
-    console.log(menu)
     removeMenuExpandIds([menu])
     if (add) {
         if (menu.subCount === 0) {
@@ -279,11 +278,9 @@ const removeMenuExpandIds = (menus: Array<any>) => {
     }
 }
 let sortTimeOut: any = {};
-let sortTimeOut2: any = {};
 const handleMenuSort = (menu: Menu, value: number) => {
     menu.menuSort = value
     if (sortTimeOut[menu.id] !== undefined) {
-        console.log(sortTimeOut[menu.id])
         clearTimeout(sortTimeOut[menu.id])
     }
     sortTimeOut[menu.id] = setTimeout(() => {

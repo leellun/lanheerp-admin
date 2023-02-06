@@ -204,7 +204,6 @@ let sortTimeOut: any = {};
 const handleDeptSort = (dept: Dept, value: number) => {
     dept.deptSort = value
     if (sortTimeOut[dept.id] !== undefined) {
-        console.log(sortTimeOut[dept.id])
         clearTimeout(sortTimeOut[dept.id])
     }
     sortTimeOut[dept.id] = setTimeout(() => {

@@ -77,7 +77,6 @@ function handleSubmit(e: Event) {
   state.value = true;
   validate(['username', 'password']).then(async () => {
     _auth_login(formRef.username, secret.encrypt(formRef.password)).then(res => {
-      console.log(res)
       userStore.setToken(res.access_token, res.refresh_token);
       if (router.currentRoute.value.query['redirect'] != undefined) {
         let redirect = router.currentRoute.value.query['redirect'] as string

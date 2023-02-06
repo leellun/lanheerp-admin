@@ -57,9 +57,6 @@ const handleLogout = (e: any) => {
         title: '信息',
         content: '您确定要注销吗？',
         onOk: () => {
-            // return new Promise((resolve, reject) => {
-            //   setTimeout(Math.random() > 0.5 ? resolve : reject, 1500)
-            // }).catch(() => console.log('Oops errors!'))
             return userStore.loginOut().then(() => {
                 router.push({ name: 'login' })
             })

@@ -235,7 +235,6 @@ const getUser = () => {
     form.roleIds = res.roleIds
     form.username = res.username
     form.realName = res.realName
-    console.log(form)
   })
 }
 if (props.id) {

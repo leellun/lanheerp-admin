@@ -48,7 +48,6 @@ const handlePrev = () => {
   emit('prevStep')
 }
 const handleFinishCommit = () => {
-  console.log(props.value)
   emit('finishCommit', props.isEdit);
 }
 //选中的专题

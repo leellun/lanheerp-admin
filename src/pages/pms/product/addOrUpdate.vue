@@ -1,18 +1,19 @@
 <template>
     <div class="main-container">
-        <a-steps :current="currentTag" style="width:300px">
+        <a-steps :current="currentTag">
             <a-step title="填写商品信息" />
             <a-step title="填写商品促销" />
             <a-step title="填写商品属性" />
             <a-step title="选择商品关联" />
         </a-steps>
-        <ProductInfoDetail v-model:value="productParam" :is-edit="isEdit" @nextStep="nextStep" v-show="showStatus[0]" />
+        <ProductInfoDetail v-model:value="productParam" :is-edit="isEdit" @nextStep="nextStep"
+            v-show="currentTag === 0" />
         <ProductSaleDetail v-model:value="productParam" :is-edit="isEdit" @nextStep="nextStep" @prevStep="prevStep"
-            v-show="showStatus[1]" />
+            v-show="currentTag === 1" />
         <ProductAttrDetail v-model:value="productParam" :is-edit="isEdit" @nextStep="nextStep" @prevStep="prevStep"
-            v-show="showStatus[2]" />
+            v-show="currentTag === 2" />
         <ProductRelationDetail v-model:value="productParam" :is-edit="isEdit" @finishCommit="finishCommit"
-            @prevStep="prevStep" v-show="showStatus[3]" />
+            @prevStep="prevStep" v-show="currentTag === 3" />
     </div>
 </template>
 <script lang="ts" setup>
@@ -28,11 +29,17 @@ import { _createProduct, _updateProduct } from '@/api/pms/productApi'
 import { Modal } from 'ant-design-vue';
 import events from '@/utils/eventBus'
 const route = useRoute()
-console.log(route.query)
 const productId = ref<string>('')
 const productParam = ref<ProductDto | any>({
-    productLadderList: new Array<ProductLadder>(),//商品阶梯价格
-    productFullReductionList: new Array<ProductFullReduction>(), //商品满减价格
+    productLadderList: [{
+        count: 0,
+        discount: 0,
+        price: 0
+    }],//商品阶梯价格
+    productFullReductionList: [{
+        fullPrice: 0,
+        reducePrice: 0
+    }], //商品满减价格
     memberPriceList: new Array<MemberPrice>(),//商品会员价格
     skuStockList: new Array<SkuStock | any>(), //商品的sku库存信息
     productAttributeValueList: new Array<ProductAttributeValue>(),//商品参数及自定义规格属性
@@ -82,27 +89,20 @@ const productParam = ref<ProductDto | any>({
 })
 const isEdit = computed(() => productId.value != '')
 const showStatus = ref([true, false, false, false])
-const currentTag = ref<number>(0)
+const currentTag = ref<number>(1)
 const prevStep = () => {
-    if (currentTag.value > 0 && currentTag.value < showStatus.value.length) {
+    if (currentTag.value > 0 && currentTag.value < 4) {
         currentTag.value--;
-        hideAll();
-        showStatus.value[currentTag.value] = true;
     }
 }
 const nextStep = () => {
+    console.log(productParam.value)
     if (currentTag.value < showStatus.value.length - 1) {
         currentTag.value++;
-        hideAll();
-        showStatus.value[currentTag.value] = true;
-    }
-}
-const hideAll = () => {
-    for (let i in showStatus.value) {
-        showStatus.value[i] = false
     }
 }
 const finishCommit = (isEdit: boolean) => {
+    console.log(productParam.value)
     Modal.confirm({
         title: "提示",
         content: "是否要提交该产品",
@@ -126,6 +126,6 @@ const finishCommit = (isEdit: boolean) => {
 <style lang="less">
 .main-container>.ant-steps {
     margin-bottom: 30px;
-    width: 750px;
+    max-width: 750px;
 }
 </style>

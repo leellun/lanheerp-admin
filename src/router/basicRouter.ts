@@ -104,7 +104,6 @@ export const generateAsyncRoutes = (router: Router, menus?: Array<any>) => {
   resetMenuPath("", menus);
   const permissionStore = usePermissionStore();
   permissionStore.setMenus(cloneDeep(menus));
-  // console.log(permissionStore.getMenus)
   rootRouter.children = menus;
 
   refreshMenuData(rootRouter);

@@ -274,7 +274,6 @@ const getMenu = (id: string) => {
                 form[key] = result[key]
             }
         });
-        console.log(form)
     })
 }
 if (props.id) {

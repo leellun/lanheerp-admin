@@ -1,6 +1,6 @@
 <template>
   <div >
-    <a-form :model="value" :labelCol="{ style: { width: '150px' } }">
+    <a-form :model="value" :labelCol="{ style: { width: '150px' } }" style="width: 720px">
       <a-form-item label="商品分类：">
         <a-tree-select v-model:value="value.productCategoryId" tree-data-simple-mode style="width: 100%"
           placeholder="请选择..." :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"

@@ -1,5 +1,5 @@
 <template>
-  <a-upload v-model:file-list="fileList" name="avatar" list-type="picture-card" class="avatar-uploader"
+  <a-upload v-model:file-list="fileList" name="file" list-type="picture-card" class="avatar-uploader"
     :headers="headers" :show-upload-list="false" :action="getUploadUrl" :before-upload="beforeUpload"
     @change="handleChange">
     <img v-if="imageUrl" :src="imageUrl" alt="avatar" class="img" />
@@ -14,7 +14,7 @@
 import { ref, computed } from 'vue'
 import { PlusOutlined, LoadingOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
-import type { UploadChangeParam, UploadProps } from 'ant-design-vue';
+import type { UploadChangeParam } from 'ant-design-vue';
 import { useUserStore } from '@/store/user'
 const userStore = useUserStore()
 const getUploadUrl = () => {

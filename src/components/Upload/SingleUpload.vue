@@ -45,7 +45,7 @@ const handleChange = (info: UploadChangeParam|any) => {
   }
 };
 
-const beforeUpload = (file: UploadProps['fileList'][number]) => {
+const beforeUpload = (file: any) => {
   const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
   if (!isJpgOrPng) {
     message.error('只能上传JPG或者PNG图片!');

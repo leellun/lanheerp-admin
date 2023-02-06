@@ -1,8 +1,8 @@
 <template>
-  <div >
+  <div>
     <a-form :model="value" :labelCol="{ style: { width: '150px' } }" style="width: 720px">
       <a-form-item label="商品分类：">
-        <a-tree-select v-model:value="value.productCategoryId" tree-data-simple-mode style="width: 100%"
+        <a-tree-select v-model:value="value.productCategoryId"  style="width: 100%"
           placeholder="请选择..." :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
           :tree-data="productCateOptions">
         </a-tree-select>
@@ -56,7 +56,7 @@
 import { ref, reactive } from 'vue'
 import { message, TreeSelectProps, Form } from 'ant-design-vue';
 import { _fetchListWithChildren } from '@/api/pms/productCateApi'
-import { _getBrandList } from '@/api/pms/brandApi'
+import { _getAllBrandList } from '@/api/pms/brandApi'
 import type { ProductDto } from '@/api/pms/productApi'
 import type { Brand } from '@/api/pms/brandApi'
 import type { ProductAttributeCategory } from '@/api/pms/productAttrCateApi'
@@ -83,9 +83,8 @@ const rulesRef = reactive({
   requiredProp: [{ required: true, message: '该项为必填项', trigger: 'blur' }]
 })
 const { validate, validateInfos } = useForm(props.value, rulesRef)
-
 const getBrandList = () => {
-  _getBrandList().then(res => {
+  _getAllBrandList().then(res => {
     brandOptions.value = res.data
   })
 }
@@ -97,11 +96,12 @@ const getProductCateList = () => {
       let children = [];
       if (list[i].children != null && list[i].children.length > 0) {
         for (let j = 0; j < list[i].children.length; j++) {
-          children.push({ title: list[i].children[j].name, value: list[i].children[j].id });
+          children.push({ title: list[i].children[j].name, key: list[i].children[j].id, value: list[i].children[j].id });
         }
       }
-      productCateOptions.value.push({ title: list[i].name, value: list[i].id, children: children });
+      productCateOptions.value.push({ title: list[i].name, key: list[i].id, value: list[i].id, children: children });
     }
+    console.log(productCateOptions.value)
   });
 }
 const handleBrandChange = (val: string) => {
@@ -114,7 +114,7 @@ const handleBrandChange = (val: string) => {
   }
   props.value.brandName = brandName;
 }
-const handleNext =()=>{
+const handleNext = () => {
 
 }
 getProductCateList()

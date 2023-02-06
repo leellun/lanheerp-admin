@@ -31,6 +31,7 @@
   },
   "devDependencies": {
     "@types/crypto-js": "^4.1.1",
+    "@types/json-bigint": "^1.0.1",
     "@types/lodash": "^4.14.191",
     "@types/node": "^18.11.11",
     "@types/nprogress": "^0.2.0",

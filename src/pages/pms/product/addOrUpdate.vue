@@ -4,13 +4,13 @@
     </div>
 </template>
 <script lang="ts" setup>
-import { reactive } from 'vue'
+import { ref } from 'vue'
 import ProductAttrDetail from './modals/ProductAttrDetail.vue';
 import ProductInfoDetail from './modals/ProductInfoDetail.vue';
 
 import type { MemberPrice, PrefrenceAreaProductRelationDto, ProductAttributeValue, ProductAttrPic, ProductDto, ProductFullReduction, ProductLadder, SubjectProductRelationDto } from '@/api/pms/productApi'
 import { SkuStock } from '@/api/pms/skuStockApi';
-const productParam = reactive<ProductDto>({
+const productParam = ref<ProductDto>({
     productLadderList: new Array<ProductLadder>(),//商品阶梯价格
     productFullReductionList: new Array<ProductFullReduction>(), //商品满减价格
     memberPriceList: new Array<MemberPrice>(),//商品会员价格

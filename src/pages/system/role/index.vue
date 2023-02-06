@@ -64,7 +64,7 @@
             </template>
         </a-table>
         <RoleModal v-model:visible="modalVisible" :id="roleId" v-if="modalVisible" @ok="handleOk" />
-        <MenuPermission v-model:visible="permissionModalVisible" :id="roleId" v-if="permissionModalVisible" @ok="handleOk" />
+        <MenuPermission v-model:visible="permissionModalVisible" :id="(roleId as string)" v-if="permissionModalVisible" @ok="handleOk" />
     </div>
 </template>
 <script setup lang="ts"  >

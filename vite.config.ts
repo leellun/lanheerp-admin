@@ -8,6 +8,7 @@ import { createSvgIconsPlugin } from "vite-plugin-svg-icons";
 import viteCompression from "vite-plugin-compression";
 import { terser } from "rollup-plugin-terser";
 import { visualizer } from "rollup-plugin-visualizer";
+
 import {
   createStyleImportPlugin,
   AndDesignVueResolve,
@@ -31,7 +32,7 @@ export default defineConfig({
     port: 8081,
     proxy: {
       "/api": {
-        target: "http://localhost:88",
+        target: "http://192.168.100.8:88",
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ""),
       },

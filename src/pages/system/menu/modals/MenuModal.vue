@@ -172,12 +172,12 @@ const rulesRef = reactive({
 })
 const { validate, validateInfos } = useForm(form, rulesRef)
 const orgaTree = ref<TreeSelectProps['treeData']>([]);
-const onLoadData = (treeNode: TreeSelectProps['treeData'][number]) => {
+const onLoadData = (treeNode: any) => {
     return new Promise(resolve => {
         getSubMenus(treeNode, resolve)
     });
 };
-const getSubMenus = (treeNode?: TreeSelectProps['treeData'][number], resolve?: any) => {
+const getSubMenus = (treeNode?: any, resolve?: any) => {
     let pid = treeNode ? treeNode.id : '0'
     _getSubMenus(pid).then(res => {
         let tmpTreeData

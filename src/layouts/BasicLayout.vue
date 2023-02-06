@@ -23,8 +23,8 @@
                 </transition>
             </a-layout-content>
             <!-- layout footer -->
-            <a-layout-footer>
-                <global-footer />
+            <a-layout-footer >
+                <global-footer v-if="false"/>
             </a-layout-footer>
         </a-layout>
     </a-layout>

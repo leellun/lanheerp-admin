@@ -1,5 +1,5 @@
 import { httpRequest, httpRequestWithMsg } from "@/utils/request";
-import { Page } from "./types";
+import { Page } from "../types";
 export interface Dept {
   id: string;
   name: string;

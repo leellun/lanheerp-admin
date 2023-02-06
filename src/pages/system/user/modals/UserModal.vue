@@ -221,7 +221,7 @@ const getSubDepts = (treeNode?: TreeSelectProps['treeData'][number], resolve?: a
 }
 const getUser = () => {
   _getUser(props.id as string).then(r => {
-    let res = r.result
+    let res = r.data
     form.deptId = res.deptId
     form.deptName = res.deptName
     form.avatar = res.avatar

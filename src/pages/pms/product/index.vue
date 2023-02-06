@@ -3,35 +3,35 @@
         <!--工具栏-->
         <a-form layout="inline" :model="formRef" @submit="handleSearch" :gutter="24">
             <a-form-item label="商品名称：">
-                <a-input size="small" :span="8" v-model:value="formRef.name" style="width: 200px" placeholder="输入名称">
+                <a-input size="small" :span="8" v-model:value="formRef.keyword" style="width: 200px" placeholder="输入名称">
                 </a-input>
             </a-form-item>
             <a-form-item label="商品货号：">
-                <a-input size="small" v-model:value="formRef.name" style="width: 200px"  placeholder="商品货号">
+                <a-input size="small" v-model:value="formRef.productSn" style="width: 200px" placeholder="商品货号">
                 </a-input>
             </a-form-item>
             <a-form-item label="商品分类：">
-                <a-select v-model:value="formRef.enabled" size="small" style="width: 200px" placeholder="请选择">
+                <a-select v-model:value="formRef.productCategoryId" size="small" style="width: 200px" placeholder="请选择">
                     <a-select-option value="1">启用</a-select-option>
                     <a-select-option value="0">禁用</a-select-option>
                 </a-select>
             </a-form-item>
             <a-form-item label="商品品牌：">
-                <a-select v-model:value="formRef.enabled" size="small" style="width: 200px" placeholder="请选择">
+                <a-select v-model:value="formRef.brandId" size="small" style="width: 200px" placeholder="请选择">
                     <a-select-option value="1">启用</a-select-option>
                     <a-select-option value="0">禁用</a-select-option>
                 </a-select>
             </a-form-item>
             <a-form-item label="上架状态：">
-                <a-select v-model:value="formRef.enabled" size="small" style="width: 200px" placeholder="状态">
-                    <a-select-option value="1">启用</a-select-option>
-                    <a-select-option value="0">禁用</a-select-option>
+                <a-select v-model:value="formRef.publishStatus" size="small" style="width: 200px" placeholder="状态">
+                    <a-select-option :value="1">上架</a-select-option>
+                    <a-select-option :value="0">下架</a-select-option>
                 </a-select>
             </a-form-item>
             <a-form-item label="审核状态：">
-                <a-select v-model:value="formRef.enabled" size="small"  style="width: 200px"  placeholder="状态">
-                    <a-select-option value="1">启用</a-select-option>
-                    <a-select-option value="0">禁用</a-select-option>
+                <a-select v-model:value="formRef.verifyStatus" size="small" style="width: 200px" placeholder="状态">
+                    <a-select-option :value="1">审核通过</a-select-option>
+                    <a-select-option :value="0">未审核</a-select-option>
                 </a-select>
             </a-form-item>
 
@@ -61,19 +61,53 @@
             @change="handleTableChange" :scroll="{ x: 280 }"
             :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }">
             <template #bodyCell="{ column, record }">
-                <template v-if="column.key === 'enabled'">
-                    <a-tag color="green" v-if="record.enabled === 1">启用</a-tag>
-                    <a-tag color="red" v-else>禁用</a-tag>
+                <template v-if="column.key === 'verifyStatus'">
+                    <p>{{ record.verifyStatus === 1 ? '审核通过' : '未审核' }}</p>
+                    <p>
+                        <a @click="handleShowVerifyDetail(record)">审核详情
+                        </a>
+                    </p>
+                </template>
+                <template v-else-if="column.key === 'pic'">
+                    <a-image :width="100" :src="record.pic" />
+                </template>
+                <template v-else-if="column.key === 'name'">
+                    <p>{{ record.name }}</p>
+                    <p>品牌：{{ record.brandName }}</p>
+                </template>
+                <template v-else-if="column.key === 'productSn'">
+                    <p>价格：￥{{ record.price }}</p>
+                    <p>货号：{{ record.productSn }}</p>
+                </template>
+                <template v-else-if="column.key === 'stock'">
+                    <a-button type="primary" @click="handleShowSkuEditDialog(record)" shape="circle">
+                        <template #icon>
+                            <edit-outlined />
+                        </template>
+                    </a-button>
+                </template>
+                <template v-else-if="column.key === 'publishStatus'">
+                    <p>上架：
+                        <a-switch @change="handlePublishStatusChange(record)" :active-value="1" :inactive-value="0"
+                            :checked="record.publishStatus === 1">
+                        </a-switch>
+                    </p>
+                    <p>新品：
+                        <a-switch @change="handleNewStatusChange(record)" :active-value="1" :inactive-value="0"
+                            :checked="record.newStatus === 1">
+                        </a-switch>
+                    </p>
+                    <p>推荐：
+                        <a-switch @change="handleRecommendStatusChange(record)" :active-value="1" :inactive-value="0"
+                            :checked="record.recommendStatus === 1">
+                        </a-switch>
+                    </p>
                 </template>
                 <template v-else-if="column.key === 'action'">
                     <span>
                         <a @click="(e?: Event) => handleEditRecord(e, record.id)" v-permission="['job:update']">编辑</a>
                         <a-divider type="vertical" v-permission="['job:update']" />
-                        <a-switch :checked="record.enabled === 1" checked-children="启用" un-checked-children="禁用"
-                            @change="handleEnableChange(record.id, record.enabled === 0 ? 1 : 0)"
-                            v-permission="['job:update']" />
-                        <a-divider type="vertical" v-permission="['job:update']" />
-                        <a-popconfirm title="是否删除岗位？" ok-text="是" cancel-text="否"
+                        <a-popconfirm title="是否删除商品？" ok-text="是" cancel-text="否"
                             @confirm="() => handleDeleteRecord([record.id])">
                             <a v-permission="['job:delete']">删除</a>
                         </a-popconfirm>
@@ -85,36 +119,58 @@
 </template>
 <script setup lang="ts"  >
 import { ref, reactive } from 'vue'
-import type { JobSearch, Job } from '@/api/system/jobApi'
-import { _getPageJobs, _deleteJob, _enableJob } from '@/api/system/jobApi'
+import type { ProductSearchDto, Product } from '@/api/pms/productApi'
+import { _productList, _updateDeleteStatus, _updatePublishStatus,_updateNewStatus,_updateRecommendStatus } from '@/api/pms/productApi'
 import { Form, Modal } from 'ant-design-vue';
 const jobId = ref<string>()
 const modalVisible = ref<boolean>(false)
 const selectedRowKeys = ref<string[]>([]);
-const data = ref<Array<Job | any>>([]);
+const data = ref<Array<Product | any>>([]);
 const pagination = reactive<any>({ pageSize: 10, pageNo: 1 })
-const formRef = reactive<Partial<JobSearch>>({
-    name: undefined,
-    enabled: undefined
+const formRef = reactive<Partial<ProductSearchDto>>({
 })
 const useForm = Form.useForm
 const { resetFields } = useForm(formRef)
 const loading = ref<boolean>(false)
 const columns = [
     {
-        title: '岗位名',
+        title: '商品图片',
+        key: 'pic',
+        width: 100
+    }, {
+        title: '商品名称',
         dataIndex: 'name',
         key: 'name',
         width: 100
     }, {
-        title: '状态',
-        key: 'enabled',
-        width: 60
+        title: '价格/货号',
+        dataIndex: 'productSn',
+        key: 'productSn',
+        width: 100
     }, {
-        title: '创建日期',
-        dataIndex: 'gmtCreate',
-        key: 'gmtCreate',
-        width: 120
+        title: '标签',
+        dataIndex: 'publishStatus',
+        key: 'publishStatus',
+        width: 100
+    }, {
+        title: '排序',
+        dataIndex: 'sort',
+        key: 'sort',
+        width: 100
+    }, {
+        title: 'SKU库存',
+        dataIndex: 'stock',
+        key: 'stock',
+        width: 100
+    }, {
+        title: '销量',
+        dataIndex: 'sale',
+        key: 'sale',
+        width: 100
+    }, {
+        title: '审核状态',
+        key: 'verifyStatus',
+        width: 60
     }, {
         title: '操作',
         fixed: 'right',
@@ -122,17 +178,48 @@ const columns = [
         key: 'action'
     }
 ];
+const handleShowVerifyDetail = (record: Product) => {
+
+}
+const handlePublishStatusChange = (record: Product) => {
+    updatePublishStatus([record.id], record.publishStatus === 1 ? 0 : 1)
+}
+const handleNewStatusChange = (record: Product) => {
+    updateNewStatus([record.id], record.newStatus === 1 ? 0 : 1)
+}
+const handleRecommendStatusChange = (record: Product) => {
+    updateRecommendStatus([record.id], record.recommendStatus === 1 ? 0 : 1)
+}
+const handleShowSkuEditDialog = (record: Product) => {
+
+}
+const updatePublishStatus = (ids: Array<string>, publishStatus: number) => {
+    _updatePublishStatus({ ids, publishStatus }).then(res => {
+        getPageProducts()
+    });
+}
+const updateNewStatus = (ids: Array<string>, newStatus: number) => {
+    _updateNewStatus({ ids, newStatus }).then(res => {
+        getPageProducts()
+    });
+}
+const updateRecommendStatus = (ids: Array<string>, recommendStatus: number) => {
+    _updateRecommendStatus({ ids, recommendStatus }).then(res => {
+        getPageProducts()
+    });
+}
+
 const onSelectChange = (keys: string[]) => {
     selectedRowKeys.value = keys;
 };
 const handleSearch = () => {
     formRef.pageNo = 1
-    getPageJobs()
+    getPageProducts()
 }
-const getPageJobs = () => {
+const getPageProducts = () => {
     loading.value = true
     formRef.pageSize = pagination.pageSize
-    _getPageJobs(formRef as JobSearch).then(res => {
+    _productList(formRef as ProductSearchDto).then(res => {
         pagination.pageNo = res.data.current
         pagination.pageSize = res.data.size
         pagination.total = res.data.total
@@ -146,7 +233,7 @@ const getPageJobs = () => {
 }
 const handleTableChange = (page: any, filters: any, sorter: any) => {
     pagination.pageNo = page.pageNo;
-    getPageJobs();
+    getPageProducts();
 }
 const handleResetSearch = () => {
     resetFields()
@@ -161,7 +248,7 @@ const handleDeleteSelected = (e?: Event) => {
     if (selectedRowKeys.value.length > 0) {
         Modal.confirm({
             title: "系统提示",
-            content: "是否删除选中用户？",
+            content: "是否删除选中商品？",
             okText: "确认",
             cancelText: "取消",
             onOk: () => {
@@ -177,18 +264,13 @@ const handleEditRecord = (e?: Event, id?: string) => {
     modalVisible.value = true;
 }
 const handleDeleteRecord = (ids: string[]) => {
-    _deleteJob(ids).then(res => {
-        getPageJobs()
-    })
+    _updateDeleteStatus(ids).then(res => {
+        getPageProducts()
+    });
 }
 const handleOk = () => {
     handleSearch()
 };
-const handleEnableChange = (id: string, enabled: number) => {
-    _enableJob(id, enabled).then(res => {
-        getPageJobs()
-    })
-}
 handleSearch()
 </script>
 <style lang="less" scoped>

@@ -4,6 +4,8 @@ import { useUserStore } from "@/store/user";
 import WebConfig from "@/config/defaultSettings";
 import { message, Modal } from "ant-design-vue";
 import type { RestResponse } from "@/api/types";
+import JSONBig from "json-bigint";
+
 // 创建axios实例
 const service: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_APP_BASE_API, // api 的 base_url
@@ -11,6 +13,16 @@ const service: AxiosInstance = axios.create({
   headers: {
     "X-Requested-With": "XMLHttpRequest",
   },
+  transformResponse: [
+    function (data) {
+      // 对 data 进行任意转换处理
+      try {
+        return JSONBig.parse(data);
+      } catch (err) {
+        return data;
+      }
+    },
+  ],
 });
 
 // request拦截器
@@ -52,7 +64,7 @@ service.interceptors.response.use(
       message.error("网络请求超时");
       return Promise.reject(error);
     }
-    console.log(error.response)
+    console.log(error.response);
     if (error.response && error.response.data) {
       let data = error.response.data;
       if (data.code === 401) {

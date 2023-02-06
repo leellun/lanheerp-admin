@@ -12,7 +12,6 @@ import type {
 NProgress.configure({ showSpinner: false }); // NProgress Configuration
 
 const whiteList = ["login", "register", "registerResult"]; // 不进行拦截的路由名称集合
-const defaultRoutePath = "/dashboard/workplace";
 
 export const setupBeforeEach = (router: Router) => {
   router.beforeEach(async (to, from, next) => {
@@ -28,7 +27,7 @@ export const setupBeforeEach = (router: Router) => {
         return;
       }
       if (to.name === "login") {
-        next({ path: defaultRoutePath });
+        next({ path: '/' });
         NProgress.done();
       } else {
         next();

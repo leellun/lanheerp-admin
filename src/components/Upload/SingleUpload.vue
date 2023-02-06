@@ -1,8 +1,8 @@
 <template>
   <a-upload v-model:file-list="fileList" name="avatar" list-type="picture-card" class="avatar-uploader"
-    :show-upload-list="false" :action="getUploadUrl" :before-upload="beforeUpload"
+    :headers="headers" :show-upload-list="false" :action="getUploadUrl" :before-upload="beforeUpload"
     @change="handleChange">
-    <img v-if="imageUrl" :src="imageUrl" alt="avatar"  class="img"/>
+    <img v-if="imageUrl" :src="imageUrl" alt="avatar" class="img" />
     <div v-else>
       <loading-outlined v-if="loading"></loading-outlined>
       <plus-outlined v-else></plus-outlined>
@@ -11,12 +11,14 @@
   </a-upload>
 </template>
 <script setup lang="ts">
-import {ref} from 'vue'
+import { ref, computed } from 'vue'
 import { PlusOutlined, LoadingOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
 import type { UploadChangeParam, UploadProps } from 'ant-design-vue';
-const getUploadUrl=()=>{
-  return import.meta.env.VITE_APP_BASE_API+"/storage/oss/upload"
+import { useUserStore } from '@/store/user'
+const userStore = useUserStore()
+const getUploadUrl = () => {
+  return import.meta.env.VITE_APP_BASE_API + "/storage/oss/upload"
 }
 const getBase64 = (img: Blob, callback: (base64Url: string) => void) => {
   const reader = new FileReader();
@@ -26,8 +28,11 @@ const getBase64 = (img: Blob, callback: (base64Url: string) => void) => {
 const fileList = ref([]);
 const loading = ref<boolean>(false);
 const imageUrl = ref<string>('');
+const headers = computed(() => {
+  return { Authorization: `Bearer ${userStore.token}` }
+})
 
-const handleChange = (info: UploadChangeParam|any) => {
+const handleChange = (info: UploadChangeParam | any) => {
   if (info.file.status === 'uploading') {
     loading.value = true;
     return;
@@ -62,6 +67,7 @@ const beforeUpload = (file: any) => {
   width: 128px;
   height: 128px;
 }
+
 .img {
   width: 128px;
   height: 128px;

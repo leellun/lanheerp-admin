@@ -99,7 +99,7 @@ export interface ProductAttrPic{
   pic:string;
   value:string;
 }
-export interface ProductDto extends Partial<Product>{
+export interface ProductDto extends Product{
   productLadderList:Array<ProductLadder> //商品阶梯价格
   productFullReductionList:Array<ProductFullReduction> //商品满减价格
   memberPriceList:Array<MemberPrice> //商品会员价格

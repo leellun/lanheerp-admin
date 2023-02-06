@@ -1,7 +1,9 @@
 import { UserLayout, BasicLayout, RouteView } from "@/layouts";
 import { TRouter } from "./types";
+import { rootRouter } from './basicRouter'
 
 export default [
+  rootRouter,
   {
     path: "/user",
     name: "user",
@@ -9,7 +11,7 @@ export default [
     redirect: "/login",
     hidden: true,
     children: [
-      
+
     ],
   },
   {

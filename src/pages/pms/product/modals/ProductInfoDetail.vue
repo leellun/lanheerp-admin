@@ -67,6 +67,7 @@ const props = withDefaults(defineProps<{
   isEdit: false
 })
 const useForm = Form.useForm
+const emit = defineEmits(['nextStep'])
 //商品属性分类下拉选项
 const selectProductCateValue = ref<Array<ProductAttributeCategory>>([])
 const productCateOptions = ref<TreeSelectProps['treeData']>([]);
@@ -115,7 +116,7 @@ const handleBrandChange = (val: string) => {
   props.value.brandName = brandName;
 }
 const handleNext = () => {
-
+  emit('nextStep')
 }
 getProductCateList()
 getBrandList()

@@ -1,16 +1,36 @@
 <template>
     <div class="main-container">
-        <ProductInfoDetail v-model:value="productParam" :is-edit="false" />
+        <a-steps :current="currentTag" style="width:300px">
+            <a-step title="填写商品信息" />
+            <a-step title="填写商品促销" />
+            <a-step title="填写商品属性" />
+            <a-step title="选择商品关联" />
+        </a-steps>
+        <ProductInfoDetail v-model:value="productParam" :is-edit="isEdit" @nextStep="nextStep" v-show="showStatus[0]" />
+        <ProductSaleDetail v-model:value="productParam" :is-edit="isEdit" @nextStep="nextStep" @prevStep="prevStep"
+            v-show="showStatus[1]" />
+        <ProductAttrDetail v-model:value="productParam" :is-edit="isEdit" @nextStep="nextStep" @prevStep="prevStep"
+            v-show="showStatus[2]" />
+        <ProductRelationDetail v-model:value="productParam" :is-edit="isEdit" @finishCommit="finishCommit"
+            @prevStep="prevStep" v-show="showStatus[3]" />
     </div>
 </template>
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { useRoute } from 'vue-router'
 import ProductAttrDetail from './modals/ProductAttrDetail.vue';
 import ProductInfoDetail from './modals/ProductInfoDetail.vue';
-
+import ProductRelationDetail from './modals/ProductRelationDetail.vue';
+import ProductSaleDetail from './modals/ProductSaleDetail.vue';
 import type { MemberPrice, PrefrenceAreaProductRelationDto, ProductAttributeValue, ProductAttrPic, ProductDto, ProductFullReduction, ProductLadder, SubjectProductRelationDto } from '@/api/pms/productApi'
 import { SkuStock } from '@/api/pms/skuStockApi';
-const productParam = ref<ProductDto>({
+import { _createProduct, _updateProduct } from '@/api/pms/productApi'
+import { Modal } from 'ant-design-vue';
+import events from '@/utils/eventBus'
+const route = useRoute()
+console.log(route.query)
+const productId = ref<string>('')
+const productParam = ref<ProductDto | any>({
     productLadderList: new Array<ProductLadder>(),//商品阶梯价格
     productFullReductionList: new Array<ProductFullReduction>(), //商品满减价格
     memberPriceList: new Array<MemberPrice>(),//商品会员价格
@@ -18,9 +38,94 @@ const productParam = ref<ProductDto>({
     productAttributeValueList: new Array<ProductAttributeValue>(),//商品参数及自定义规格属性
     subjectProductRelationList: new Array<SubjectProductRelationDto>(),//专题和商品关系
     prefrenceAreaProductRelationList: new Array<PrefrenceAreaProductRelationDto>(), //优选专区和商品的关系
-    productAttrPics: new Array<ProductAttrPic>() //属性图片
-}) 
+    productAttrPics: new Array<ProductAttrPic>(), //属性图片
+    id: undefined,
+    brandId: undefined,
+    productCategoryId: undefined,
+    feightTemplateId: undefined,
+    productAttributeCategoryId: undefined,
+    name: undefined,
+    pic: null,
+    productSn: undefined,
+    publishStatus: undefined,
+    newStatus: undefined,
+    recommendStatus: undefined,
+    verifyStatus: undefined,
+    sort: undefined,
+    sale: undefined,
+    price: undefined,
+    promotionPrice: undefined,
+    giftGrowth: undefined,
+    giftPoint: undefined,
+    usePointLimit: undefined,
+    originalPrice: undefined,
+    subTitle: undefined,
+    description: undefined,
+    serviceIds: undefined,
+    keywords: undefined,
+    note: undefined,
+    unit: undefined,
+    albumPics: null,
+    detailTitle: undefined,
+    detailDesc: undefined,
+    detailHtml: undefined,
+    detailMobileHtml: undefined,
+    promotionStartTime: undefined,
+    brandName: undefined,
+    productCategoryName: undefined,
+    stock: undefined,
+    lowStock: undefined,
+    weight: undefined,
+    previewStatus: undefined,
+    promotionPerLimit: undefined,
+    promotionType: undefined
+})
+const isEdit = computed(() => productId.value != '')
+const showStatus = ref([true, false, false, false])
+const currentTag = ref<number>(0)
+const prevStep = () => {
+    if (currentTag.value > 0 && currentTag.value < showStatus.value.length) {
+        currentTag.value--;
+        hideAll();
+        showStatus.value[currentTag.value] = true;
+    }
+}
+const nextStep = () => {
+    if (currentTag.value < showStatus.value.length - 1) {
+        currentTag.value++;
+        hideAll();
+        showStatus.value[currentTag.value] = true;
+    }
+}
+const hideAll = () => {
+    for (let i in showStatus.value) {
+        showStatus.value[i] = false
+    }
+}
+const finishCommit = (isEdit: boolean) => {
+    Modal.confirm({
+        title: "提示",
+        content: "是否要提交该产品",
+        okText: "确定",
+        type: "warning",
+        cancelText: "取消",
+        onOk: () => {
+            if (isEdit) {
+                _updateProduct(productId.value, productParam.value).then(res => {
+                    events.emit("multiTab.close")
+                });
+            } else {
+                _createProduct(productParam.value).then(res => {
+                    events.emit("multiTab.close")
+                });
+            }
+        },
+    });
+}
 </script>
 <style lang="less">
-
+.main-container>.ant-steps {
+    margin-bottom: 30px;
+    width: 750px;
+}
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div class="clearfix">
-    <a-upload v-model:file-list="fileList" :action="getUploadUrl"
+    <a-upload v-model:file-list="fileList" :action="getUploadUrl" :headers="headers"
       list-type="picture-card" @preview="handlePreview">
       <div v-if="fileList.length < 8">
         <plus-outlined />
@@ -14,8 +14,10 @@
 </template>
 <script setup lang="ts">
 import { PlusOutlined } from '@ant-design/icons-vue';
-import { ref } from 'vue';
+import { ref,computed } from 'vue';
 import type { UploadProps } from 'ant-design-vue';
+import { useUserStore } from '@/store/user'
+const userStore = useUserStore()
 const getUploadUrl=()=>{
   return import.meta.env.VITE_APP_BASE_API+"/storage/oss/upload"
 }
@@ -40,7 +42,9 @@ const fileList = ref<UploadProps['fileList']|any>([
     url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
   }
 ]);
-
+const headers = computed(() => {
+  return { Authorization: `Bearer ${userStore.token}` }
+})
 const handleCancel = () => {
   previewVisible.value = false;
   previewTitle.value = '';

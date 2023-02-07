@@ -59,7 +59,7 @@
           <a-tab-pane :key="2" tab="会员价格">
             <a-form>
               <a-form-item v-for="(item, index) in value.memberPriceList" :label="item.memberLevelName">
-                <a-input-number v-model="item.memberPrice" style="width: 200px"></a-input-number>
+                <a-input-number v-model:value="item.memberPrice" style="width: 200px"></a-input-number>
               </a-form-item>
             </a-form>
           </a-tab-pane>
@@ -128,6 +128,12 @@ const props = withDefaults(defineProps<{
 }>(), {
   isEdit: false
 })
+if (props.value.productLadderList.length == 0) {
+  props.value.productLadderList = [{ count: 0, discount: 0, price: 0 } as any]
+}
+if (props.value.productFullReductionList.length == 0) {
+  props.value.productFullReductionList = [{ fullPrice: 0, reducePrice: 0 } as any]
+}
 const timeRangeRef = computed<RangeValue>({
   get() {
     let ranges = new Array()
@@ -141,7 +147,6 @@ const timeRangeRef = computed<RangeValue>({
   },
   set(newValue) {
     props.value.promotionStartTime = newValue[0].format("YYYY-MM-DD HH:mm:ss")
-    console.log(props.value.promotionStartTime)
     props.value.promotionEndTime = newValue[1].format("YYYY-MM-DD HH:mm:ss")
   }
 })
@@ -150,7 +155,7 @@ const getMemberLevels = () => {
     let memberPriceList = new Array<MemberPrice | any>();
     for (let i = 0; i < res.data.length; i++) {
       let item = res.data[i];
-      let findItem = props.value.memberPriceList.find(item => item.memberLevelId === item.id)
+      let findItem = props.value.memberPriceList.find(priceItem => priceItem.memberLevelId === item.id)
       if (findItem !== undefined) {
         memberPriceList.push(findItem)
       } else {

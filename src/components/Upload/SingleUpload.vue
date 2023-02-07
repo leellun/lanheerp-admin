@@ -1,5 +1,5 @@
 <template>
-  <a-upload v-model:file-list="fileList" name="file" list-type="picture-card" class="avatar-uploader"
+  <a-upload v-model:file-list="fileList" name="pic" list-type="picture-card" class="avatar-uploader"
     :headers="headers" :show-upload-list="false" :action="getUploadUrl" :before-upload="beforeUpload"
     @change="handleChange">
     <img v-if="imageUrl" :src="imageUrl" alt="avatar" class="img" />
@@ -16,9 +16,26 @@ import { PlusOutlined, LoadingOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
 import type { UploadChangeParam } from 'ant-design-vue';
 import { useUserStore } from '@/store/user'
+const emit = defineEmits(["update:value","update:objectName"])
+const props = withDefaults(defineProps<{
+    value: string
+    objectName?:string
+}>(), {
+    value: '',
+    objectName:''
+})
+const imageUrl = computed<string>({
+    get() {
+        return props.value
+    },
+    set(newValue) {
+      console.log(newValue)
+        emit("update:value", newValue)
+    }
+})
 const userStore = useUserStore()
 const getUploadUrl = () => {
-  return import.meta.env.VITE_APP_BASE_API + "/storage/oss/upload"
+  return import.meta.env.VITE_APP_BASE_API + "/storage/oss/uploadpic"
 }
 const getBase64 = (img: Blob, callback: (base64Url: string) => void) => {
   const reader = new FileReader();
@@ -27,7 +44,6 @@ const getBase64 = (img: Blob, callback: (base64Url: string) => void) => {
 }
 const fileList = ref([]);
 const loading = ref<boolean>(false);
-const imageUrl = ref<string>('');
 const headers = computed(() => {
   return { Authorization: `Bearer ${userStore.token}` }
 })
@@ -38,11 +54,13 @@ const handleChange = (info: UploadChangeParam | any) => {
     return;
   }
   if (info.file.status === 'done') {
+    imageUrl.value = info.file.response.data.url
+    emit("update:objectName",info.file.response.data.objectName)
     // Get this url from response in real world.
-    getBase64(info.file.originFileObj, (base64Url: string) => {
-      imageUrl.value = base64Url;
-      loading.value = false;
-    });
+//  getBase64(info.file.originFileObj, (base64Url: string) => {
+//    imageUrl.value = info.file.response.data.url;
+//  });
+    loading.value = false;
   }
   if (info.file.status === 'error') {
     loading.value = false;

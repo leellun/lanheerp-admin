@@ -104,7 +104,7 @@ export interface ProductDto extends Product{
   productLadderList:Array<ProductLadder> //商品阶梯价格
   productFullReductionList:Array<ProductFullReduction> //商品满减价格
   memberPriceList:Array<MemberPrice> //商品会员价格
-  skuStockList:Array<SkuStock|any> //商品的sku库存信息
+  skuStockList:Array<SkuStock> //商品的sku库存信息
   productAttributeValueList:Array<ProductAttributeValue> //商品参数及自定义规格属性
   subjectProductRelationList:Array<SubjectProductRelationDto> //专题和商品关系
   prefrenceAreaProductRelationList:Array<PrefrenceAreaProductRelationDto> //优选专区和商品的关系

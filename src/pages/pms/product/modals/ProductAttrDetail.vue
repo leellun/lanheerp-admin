@@ -3,7 +3,7 @@
     <a-form :model="value" laba-width="120px" size="small">
       <a-form-item label="属性类型：">
         <a-select v-model:value="value.productAttributeCategoryId" placeholder="请选择属性类型"
-          @change="handleProductAttrChange" style="width:300px">
+          @change="(val: string) => handleProductAttrChange(val, false)" style="width:300px">
           <a-select-option v-for="item in productAttributeCategoryOptions" :key="item.id" :value="item.id">{{
             item.name
           }}</a-select-option>
@@ -35,8 +35,8 @@
         <a-table :columns="columns" :data-source="value.skuStockList" style="margin-top:10px" :pagination="false"
           bordered>
           <template #bodyCell="{ column, index, record }">
-            <template v-if="column.idx !== undefined">
-              {{ getProductSkuSp(record, column.idx) }}
+            <template v-if="column.attr">
+              {{ getProductSkuSp(record, column.key) }}
             </template>
             <template v-else-if="column.key === 'price'">
               <a-input v-model:value="record.price"></a-input>
@@ -61,12 +61,12 @@
         <a-button type="primary" style="margin-top: 20px;margin-left: 10px;" @click="handleSyncProductSkuStock">同步库存
         </a-button>
       </a-form-item>
-      <a-form-item label="属性图片：" v-if="productAttrPics.length > 0">
+      <a-form-item label="属性图片：" v-if="value.productAttrPics.length > 0">
         <a-card>
           <a-form>
-            <a-form-item v-for="(item, index) in productAttrPics" :label="`${item.name}:`" :key="index">
+            <a-form-item v-for="(item, index) in value.productAttrPics" :label="`${item.name}:`" :key="index">
               <single-upload v-model:value="item.pic"
-              style="width: 300px;display: inline-block;margin-left: 10px"></single-upload>
+                style="width: 300px;display: inline-block;margin-left: 10px"></single-upload>
             </a-form-item>
           </a-form>
         </a-card>
@@ -75,8 +75,7 @@
         <a-card>
           <a-form size="small" :labelCol="{ style: { width: '150px' } }">
             <a-form-item v-for="(item, index) in productParams" :label="`${item.name}:`" :key="index">
-              <a-select v-if="item.selectType === 1" v-model:value="item.value"
-                 placeholder="请选择">
+              <a-select v-if="item.selectType === 1" v-model:value="item.value" placeholder="请选择">
                 <a-select-option v-for="(val) in item.inputList.split(',')" :value="val">{{ val }}</a-select-option>
               </a-select>
               <a-checkbox-group v-else-if="item.selectType === 2" v-model:value="item.values"
@@ -89,7 +88,7 @@
       <a-form-item label="商品相册：">
         <multi-upload v-model:value="selectProductPics"></multi-upload>
       </a-form-item>
-      <a-form-item label="规格参数：" >
+      <a-form-item label="规格参数：">
         <a-tabs v-model:activeKey="activeHtmlName" type="card">
           <a-tab-pane key="pc" tab="电脑端详情">
             <tinymce :width="595" :height="300" v-model:value="value.detailHtml"></tinymce>
@@ -100,8 +99,8 @@
         </a-tabs>
       </a-form-item>
       <a-form-item style="text-align: center">
-        <a-button  @click="handlePrev">上一步，填写商品促销</a-button>
-        <a-button type="primary"  @click="handleNext" style="margin-left:15px">下一步，选择商品关联</a-button>
+        <a-button @click="handlePrev">上一步，填写商品促销</a-button>
+        <a-button type="primary" @click="handleNext" style="margin-left:15px">下一步，选择商品关联</a-button>
       </a-form-item>
     </a-form>
   </div>
@@ -111,7 +110,7 @@
 import { ref, computed, watch } from 'vue'
 import { _getTotalAttributeCategory } from '@/api/pms/productAttrCateApi'
 import { _getProductCateAttribute } from '@/api/pms/productAttrApi'
-import type { ProductDto, ProductAttrPic } from '@/api/pms/productApi'
+import type { ProductDto, ProductAttrPic, ProductAttributeValue } from '@/api/pms/productApi'
 import type { ProductAttributeCategory } from '@/api/pms/productAttrCateApi'
 import type { SkuStock } from '@/api/pms/skuStockApi'
 import type { ProductAttribute } from '@/api/pms/productAttrApi'
@@ -137,10 +136,15 @@ const productAttributeCategoryOptions = ref<Array<ProductAttributeCategory>>([])
 const productAttrs = ref<Array<OptionAttribute>>([])
 //商品参数
 const productParams = ref<Array<OptionAttribute>>([])
-//属性值图片
-const productAttrPics = ref<Array<Partial<ProductAttrPic>>>([]);
 //相册
-const selectProductPics = ref<Array<string>>([]);
+const selectProductPics = computed<Array<string>>({
+  get() {
+    return (props.value.albumPics == undefined || props.value.albumPics == null) ? [] : props.value.albumPics.split(",")
+  },
+  set(newValue) {
+    props.value.albumPics = newValue.join(",")
+  }
+});
 //商品富文本详情激活类型
 const activeHtmlName = ref<string>('pc')
 
@@ -153,7 +157,7 @@ const findProductAttribute = (key: string): OptionAttribute | null => {
   return null
 }
 const findProductAttrPic = (key: string): Partial<ProductAttrPic> | null => {
-  for (let attrPic of productAttrPics.value) {
+  for (let attrPic of props.value.productAttrPics) {
     if (attrPic.name === key) {
       return attrPic
     }
@@ -161,26 +165,26 @@ const findProductAttrPic = (key: string): Partial<ProductAttrPic> | null => {
   return null
 }
 const refreshProductAttrPics = () => {
-  if (props.value.skuStockList == undefined || props.value.skuStockList == null) {
-    props.value.skuStockList = []
-    return;
-  }
   let sptDataStr = props.value.skuStockList[0].spData
   let sptData = JSON.parse(sptDataStr)
+  let attrPics = new Array<ProductAttrPic>()
   sptData.forEach((item: any) => {
     let attr = findProductAttribute(item.key)
     if (attr != null && attr.hasPic === 1) {
       let attrPic = findProductAttrPic(item.key)
       if (attrPic === null) {
-        productAttrPics.value.push({
+        attrPics.push({
           name: item.key,
           productAttributeId: attr.id,
           pic: undefined,
           value: item.value
-        })
+        } as any)
+      } else {
+        attrPics.push(attrPic as any)
       }
     }
   })
+  props.value.productAttrPics = attrPics
 }
 const getProductAttrCateList = () => {
   _getTotalAttributeCategory().then(res => {
@@ -193,14 +197,63 @@ const getProductAttrList = (cid: string, type: number) => {
       productAttrs.value = res.data as OptionAttribute[]
     } else {
       productParams.value = res.data as OptionAttribute[]
+      if (props.value.productAttributeValueList.length > 0) {
+        productParams.value.forEach(item => {
+          let attr = props.value.productAttributeValueList.find(ii => ii.productAttributeId == item.id)
+          if (item != undefined) {
+            if (item.selectType === 2) {
+              item.values = attr?.value.split(",") as Array<string>
+            } else {
+              item.value = attr?.value
+            }
+          }
+        })
+      }
     }
   })
 }
+const mergeProductAttr = () => {
+  let attrValues = new Array<ProductAttributeValue>();
+  for (var i = 0; i < props.value.skuStockList.length; i++) {
+    let sptDataStr = props.value.skuStockList[i].spData
+    let sptData = JSON.parse(sptDataStr) as Array<any>
+    if (i === 0) {
+      sptData.forEach(spItem => {
+        let attr = findProductAttribute(spItem.key)
+        if (attr != null) {
+          attrValues.push({
+            productAttributeId: attr.id,
+            value: spItem.value
+          })
+        }
+      })
+    } else {
+      for (var j = 0; j < sptData.length; j++) {
+        let spItem = sptData[j];
+        let attrValue = attrValues[j]
+        if (attrValue.value.split(",").indexOf(spItem.value) == -1) {
+          attrValue.value = attrValue.value + "," + spItem.value
+        }
+      }
+    }
+  }
+  productParams.value.forEach(item => {
+    if (item.value != undefined || item.values != undefined) {
+      attrValues.push({
+        productAttributeId: item.id,
+        value: item.selectType === 2 ? item.values.join(",") : (item.value as string)
+      })
+    }
+  })
+  props.value.productAttributeValueList = attrValues
+}
 getProductAttrCateList()
 const handlePrev = () => {
+  mergeProductAttr()
   emit('prevStep')
 }
 const handleNext = () => {
+  mergeProductAttr()
   emit('nextStep')
 }
 const handleRemoveProductSku = (index: number, row: SkuStock) => {
@@ -269,21 +322,26 @@ const handleSyncProductSkuStock = () => {
     },
   });
 }
-const handleProductAttrChange = (val: string) => {
+const handleProductAttrChange = (val: string, edit: boolean) => {
   if (val === null || val === undefined) {
     productAttrs.value = []
     productParams.value = []
-    productAttrPics.value = []
+    props.value.productAttrPics = []
   } else {
     getProductAttrList(val, 0)
     getProductAttrList(val, 1)
-    productAttrPics.value = []
+    if (!edit) {
+      props.value.productAttrPics = []
+      props.value.productAttributeValueList = []
+      props.value.skuStockList = []
+    }
   }
 }
-const getProductSkuSp = (row: any, index: number) => {
+const getProductSkuSp = (row: any, key: string) => {
   let spData = JSON.parse(row.spData);
-  if (spData != null && index < spData.length) {
-    return spData[index].value;
+  if (spData != null) {
+    let item = spData.find((ii: any) => ii.key === key)
+    return item != undefined ? item.value : null
   } else {
     return null;
   }
@@ -302,7 +360,7 @@ const handleRefreshProductSkuList = () => {
     skuColumns.push({
       title: productAttr.name,
       key: productAttr.name,
-      idx: i,
+      attr: true,
       width: 100
     })
 
@@ -322,7 +380,7 @@ const handleRefreshProductSkuList = () => {
       var index = 0
       while (index < skuStocks.length) {
         if (productAttr.selectType === 2) {
-          let preSku = skuStocks[index]
+          let preSku = cloneDeep(skuStocks[index])
           skuStocks[index].spData.push({ key: productAttr.name, value: productAttr.values[0] })
           index++
           for (var d = 1; d < productAttr.values.length; d++) {
@@ -340,17 +398,22 @@ const handleRefreshProductSkuList = () => {
   }
   for (let i = 0; i < skuStocks.length; i++) {
     skuStocks[i].spData = JSON.stringify(skuStocks[i].spData)
-    for (let sku of props.value.skuStockList) {
-      if (sku.spData === skuStocks[i].spData) {
-        skuStocks[i] = sku
-        break;
-      }
+    let findItem = props.value.skuStockList.find(ii => ii.spData === skuStocks[i].spData)
+    if (findItem != undefined) {
+      skuStocks[i] = findItem
     }
   }
   props.value.skuStockList = skuStocks as Array<SkuStock>
   skuColumns.push(...fixed_columns)
   columns.value = skuColumns
   refreshProductAttrPics()
+  productAttrs.value.forEach(item => {
+    item.value = undefined
+    item.values = []
+  })
+}
+if (props.value.productAttributeCategoryId != undefined && props.value.productAttributeCategoryId != null) {
+  handleProductAttrChange(props.value.productAttributeCategoryId, true)
 }
 </script>
 

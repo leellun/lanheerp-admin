@@ -1,7 +1,7 @@
 <template>
   <div class="clearfix">
-    <a-upload v-model:file-list="fileList" :action="getUploadUrl" :headers="headers"
-      list-type="picture-card" @preview="handlePreview">
+    <a-upload v-model:file-list="fileList" name="pic" :action="getUploadUrl" :headers="headers" list-type="picture-card"
+      @preview="handlePreview" @change="handleChange">
       <div v-if="fileList.length < 8">
         <plus-outlined />
         <div style="margin-top: 8px">添加图片</div>
@@ -14,12 +14,17 @@
 </template>
 <script setup lang="ts">
 import { PlusOutlined } from '@ant-design/icons-vue';
-import { ref,computed } from 'vue';
-import type { UploadProps } from 'ant-design-vue';
+import { ref, computed } from 'vue';
+import { UploadProps, UploadChangeParam, message } from 'ant-design-vue';
 import { useUserStore } from '@/store/user'
 const userStore = useUserStore()
-const getUploadUrl=()=>{
-  return import.meta.env.VITE_APP_BASE_API+"/storage/oss/upload"
+const emit = defineEmits(["update:value"])
+const props = withDefaults(defineProps<{
+  value: Array<string>
+}>(), {
+})
+const getUploadUrl = () => {
+  return import.meta.env.VITE_APP_BASE_API + "/storage/oss/uploadpic"
 }
 const getBase64 = (file: File) => {
   return new Promise((resolve, reject) => {
@@ -34,14 +39,19 @@ const previewVisible = ref(false);
 const previewImage = ref('');
 const previewTitle = ref('');
 
-const fileList = ref<UploadProps['fileList']|any>([
-  {
-    uid: '-1',
-    name: 'image.png',
-    status: 'done',
-    url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-  }
+const fileList = ref<UploadProps['fileList'] | any>([
 ]);
+if (props.value != null) {
+  props.value.forEach(item => {
+    fileList.value.push({
+      uid: '-1',
+      name: item.substring(item.lastIndexOf("/") + 1),
+      status: 'done',
+      url: item,
+      httpUrl: item,
+    })
+  })
+}
 const headers = computed(() => {
   return { Authorization: `Bearer ${userStore.token}` }
 })
@@ -56,6 +66,20 @@ const handlePreview = async (file: any) => {
   previewImage.value = file.url || file.preview;
   previewVisible.value = true;
   previewTitle.value = file.name || file.url.substring(file.url.lastIndexOf('/') + 1);
+}
+const handleChange = (info: UploadChangeParam | any) => {
+  if (info.file.status === 'uploading') {
+    return;
+  }
+  if (info.file.status === 'done') {
+    console.log(info.file)
+    let item = fileList.value.find((ii: any) => ii.uid === info.file.uid)
+    if (item != undefined) {
+      item.httpUrl = info.file.response.data.url
+      let urls = fileList.value.map((ii: any) => ii.httpUrl)
+      emit("update:value", urls)
+    }
+  }
 };
 </script>
 <style lang="less" scoped>

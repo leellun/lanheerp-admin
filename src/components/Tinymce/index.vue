@@ -1,9 +1,10 @@
 <template>
     <div class="tinymce-container editor-container">
-        <editor :init="init" tinymce-script-src="/tinymce/tinymce.min.js" />
+        <editor :init="init" tinymce-script-src="/tinymce/tinymce.min.js" v-model="content" />
     </div>
 </template>
 <script lang="ts" setup>
+import { ref, computed } from 'vue'
 import Editor from '@tinymce/tinymce-vue'
 const plugins = [
     'advlist', 'anchor', 'autolink', 'autosave', 'code', 'codesample', 'directionality', 'emoticons', 'fullscreen',
@@ -22,6 +23,20 @@ const init = {
     plugins: plugins,
     toolbar: toolbar
 }
+const emit = defineEmits(["update:value"])
+const props = withDefaults(defineProps<{
+    value: string
+}>(), {
+    value: ''
+})
+const content = computed<string>({
+    get() {
+        return props.value
+    },
+    set(newValue) {
+        emit("update:value", newValue)
+    }
+})
 </script>
 <style lang="less" scoped>
 

@@ -62,10 +62,8 @@ import type { ProductDto } from '@/api/pms/productApi'
 import type { Brand } from '@/api/pms/brandApi'
 import type { ProductAttributeCategory } from '@/api/pms/productAttrCateApi'
 const props = withDefaults(defineProps<{
-  value: ProductDto,
-  isEdit: boolean
+  value: ProductDto
 }>(), {
-  isEdit: false
 })
 const useForm = Form.useForm
 const emit = defineEmits(['nextStep'])

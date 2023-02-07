@@ -33,6 +33,7 @@ export const usePermissionStore = defineStore("permission", {
       return check || (prevTime !== 0 && Date.now() - prevTime > 5000);
     },
     setMenus(menus: Array<TRouter>) {
+      this.isRouterMenuCheck = true;
       this.menus = menus;
     },
     async getCatalogues() {

@@ -125,10 +125,8 @@ interface OptionAttribute extends ProductAttribute {
 }
 const emit = defineEmits(["nextStep", "prevStep"])
 const props = withDefaults(defineProps<{
-  value: ProductDto,
-  isEdit: boolean
+  value: ProductDto
 }>(), {
-  isEdit: false
 })
 //商品属性分类下拉选项
 const productAttributeCategoryOptions = ref<Array<ProductAttributeCategory>>([])

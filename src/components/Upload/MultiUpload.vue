@@ -1,7 +1,7 @@
 <template>
   <div class="clearfix">
     <a-upload v-model:file-list="fileList" name="pic" :action="getUploadUrl" :headers="headers" list-type="picture-card"
-      @preview="handlePreview" @change="handleChange">
+      @preview="handlePreview" @change="handleChange" @remove="handleRemove">
       <div v-if="fileList.length < 8">
         <plus-outlined />
         <div style="margin-top: 8px">添加图片</div>
@@ -43,9 +43,10 @@ const fileList = ref<UploadProps['fileList'] | any>([
 ]);
 if (props.value != null) {
   props.value.forEach(item => {
+    let name = item.substring(item.lastIndexOf("/") + 1)
     fileList.value.push({
-      uid: '-1',
-      name: item.substring(item.lastIndexOf("/") + 1),
+      uid: name,
+      name: name,
       status: 'done',
       url: item,
       httpUrl: item,
@@ -67,6 +68,10 @@ const handlePreview = async (file: any) => {
   previewVisible.value = true;
   previewTitle.value = file.name || file.url.substring(file.url.lastIndexOf('/') + 1);
 }
+const handleRemove = async (file: any) => {
+  let urls = fileList.value.filter((ii:any)=>ii.uid!=file.uid).map((ii: any) => ii.httpUrl)
+  emit("update:value", urls)
+}
 const handleChange = (info: UploadChangeParam | any) => {
   if (info.file.status === 'uploading') {
     return;
@@ -75,9 +80,14 @@ const handleChange = (info: UploadChangeParam | any) => {
     console.log(info.file)
     let item = fileList.value.find((ii: any) => ii.uid === info.file.uid)
     if (item != undefined) {
-      item.httpUrl = info.file.response.data.url
-      let urls = fileList.value.map((ii: any) => ii.httpUrl)
-      emit("update:value", urls)
+      if (info.file.response.code === 200) {
+        item.httpUrl = info.file.response.data.url
+        let urls = fileList.value.map((ii: any) => ii.httpUrl)
+        emit("update:value", urls)
+      } else {
+        fileList.value.splice(fileList.value.indexOf(item), 1)
+        message.warning("上传失败")
+      }
     }
   }
 };

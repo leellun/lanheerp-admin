@@ -6,14 +6,13 @@
             <a-step title="填写商品属性" />
             <a-step title="选择商品关联" />
         </a-steps>
-        <ProductInfoDetail v-model:value="productParam" :is-edit="isEdit" @nextStep="nextStep"
-            v-if="currentTag === 0" />
-        <ProductSaleDetail v-model:value="productParam" :is-edit="isEdit" @nextStep="nextStep" @prevStep="prevStep"
+        <ProductInfoDetail v-model:value="productParam" @nextStep="nextStep" v-if="currentTag === 0" />
+        <ProductSaleDetail v-model:value="productParam" @nextStep="nextStep" @prevStep="prevStep"
             v-if="currentTag === 1" />
-        <ProductAttrDetail v-model:value="productParam" :is-edit="isEdit" @nextStep="nextStep" @prevStep="prevStep"
+        <ProductAttrDetail v-model:value="productParam" @nextStep="nextStep" @prevStep="prevStep"
             v-if="currentTag === 2" />
-        <ProductRelationDetail v-model:value="productParam" :is-edit="isEdit" @finishCommit="finishCommit"
-            @prevStep="prevStep" v-if="currentTag === 3" />
+        <ProductRelationDetail v-model:value="productParam" @finishCommit="finishCommit" @prevStep="prevStep"
+            v-if="currentTag === 3" />
     </div>
 </template>
 <script lang="ts" setup>
@@ -27,8 +26,6 @@ import type { MemberPrice, PrefrenceAreaProductRelationDto, ProductAttributeValu
 import { SkuStock } from '@/api/pms/skuStockApi';
 import { _createProduct, _updateProduct, _getProduct } from '@/api/pms/productApi'
 import { Modal } from 'ant-design-vue';
-import events from '@/utils/eventBus'
-const productId = ref<string>('')
 const productParam = ref<ProductDto | any>()
 const resetProductParam = () => {
     productParam.value = {
@@ -89,7 +86,6 @@ watch(() =>
     router.currentRoute.value,
     (route) => {
         if (route.name === routeName) {
-            console.log(route.fullPath)
             if (route.query.id != undefined) {
                 if (route.query.id != productParam.value.id) {
                     productParam.value.id = route.query.id
@@ -106,7 +102,6 @@ watch(() =>
             }
         }
     }, { immediate: true, deep: true })
-const isEdit = computed(() => productId.value != '')
 const showStatus = ref([true, false, false, false])
 const currentTag = ref<number>(0)
 const prevStep = () => {
@@ -120,7 +115,7 @@ const nextStep = () => {
         currentTag.value++;
     }
 }
-const finishCommit = (isEdit: boolean) => {
+const finishCommit = () => {
     Modal.confirm({
         title: "提示",
         content: "是否要提交该产品",
@@ -128,13 +123,13 @@ const finishCommit = (isEdit: boolean) => {
         type: "warning",
         cancelText: "取消",
         onOk: () => {
-            if (isEdit) {
-                _updateProduct(productId.value, productParam.value).then(res => {
-                    events.emit("multiTab.close")
+            if (productParam.value.id != '' && productParam.value.id != undefined && productParam.value.id != null) {
+                _updateProduct(productParam.value.id, productParam.value).then(res => {
+                    router.push({name:'product',params:{closepath:'/pms/updateProduct'}})
                 });
             } else {
                 _createProduct(productParam.value).then(res => {
-                    events.emit("multiTab.close")
+                    router.push({name:'product',params:{closepath:'/pms/addProduct'}})
                 });
             }
         },

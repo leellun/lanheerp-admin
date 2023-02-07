@@ -1,13 +1,9 @@
 import NProgress from "nprogress"; // progress bar
 import "@/components/NProgress/nprogress.less"; // progress bar custom style
-import {
-  generateApiAsyncRoutes,
-} from "@/router/basicRouter";
+import { generateApiAsyncRoutes } from "@/router/basicRouter";
 import { useUserStore } from "@/store/user";
 import { usePermissionStore } from "@/store/permission";
-import type {
-  Router,
-} from "vue-router";
+import type { Router } from "vue-router";
 
 NProgress.configure({ showSpinner: false }); // NProgress Configuration
 
@@ -22,12 +18,12 @@ export const setupBeforeEach = (router: Router) => {
       if (!permissionStore.isHasRouterMenu()) {
         let catalogues = await permissionStore.getCatalogues();
         generateApiAsyncRoutes(router, catalogues);
-        permissionStore.getUserPermissions()
-        next({ path: to.path });
+        permissionStore.getUserPermissions();
+        next({ path: to.fullPath });
         return;
       }
       if (to.name === "login") {
-        next({ path: '/' });
+        next({ path: "/" });
         NProgress.done();
       } else {
         next();

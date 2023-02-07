@@ -124,9 +124,7 @@ type RangeValue = [Dayjs, Dayjs];
 const emit = defineEmits(['prevStep', 'nextStep'])
 const props = withDefaults(defineProps<{
   value: ProductDto,
-  isEdit: boolean
 }>(), {
-  isEdit: false
 })
 if (props.value.productLadderList.length == 0) {
   props.value.productLadderList = [{ count: 0, discount: 0, price: 0 } as any]

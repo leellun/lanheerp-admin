@@ -31,9 +31,7 @@ interface MockData {
 const emit = defineEmits(['prevStep', 'finishCommit'])
 const props = withDefaults(defineProps<{
   value: ProductDto,
-  isEdit: boolean
 }>(), {
-  isEdit: false
 })
 //所有专题列表
 const subjectList = ref<Array<MockData>>([])
@@ -48,7 +46,7 @@ const handlePrev = () => {
   emit('prevStep')
 }
 const handleFinishCommit = () => {
-  emit('finishCommit', props.isEdit);
+  emit('finishCommit');
 }
 //选中的专题
 const selectSubject = computed({

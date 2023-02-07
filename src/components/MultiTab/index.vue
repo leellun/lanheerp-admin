@@ -6,7 +6,11 @@
         <a-tab-pane v-for="page in pages" :key="page.fullPath" :closable="pages.length > 1" style="height: 0">
           <template #tab>
             <a-dropdown :trigger="['contextmenu']">
-              <span :style="{ userSelect: 'none' }">{{ page.meta.customTitle || page.meta.title }} <ReloadOutlined v-if="router.currentRoute.value.fullPath==page.fullPath+'2323'"  class="trigger" style="font-size: 14px;line-height: 100%;padding: 0;margin-right: 0;margin-left: 5px;" @click="()=>{onRefreshPage(page.fullPath)}"/></span>
+              <span :style="{ userSelect: 'none' }">{{ page.meta.customTitle || page.meta.title }}
+                <ReloadOutlined v-if="router.currentRoute.value.fullPath == page.fullPath + '2323'" class="trigger"
+                  style="font-size: 14px;line-height: 100%;padding: 0;margin-right: 0;margin-left: 5px;"
+                  @click="() => { onRefreshPage(page.fullPath) }" />
+              </span>
               <template #overlay>
                 <a-menu @click="({ key, item, domEvent }: any) => { closeMenuClick(key, page.fullPath); }">
                   <a-menu-item key="closeSelf">关闭当前标签</a-menu-item>
@@ -24,18 +28,18 @@
 </template>
 <script setup lang="ts">
 import { ref, reactive, watch, getCurrentInstance, nextTick } from 'vue'
-import { useRouter,Router, RouteLocationNormalizedLoaded } from 'vue-router'
+import { useRouter, Router, RouteLocationNormalizedLoaded } from 'vue-router'
 import events from '@/utils/eventBus'
 import { message } from 'ant-design-vue'
 import { ReloadOutlined } from '@ant-design/icons-vue'
-import {usePermissionStore} from '@/store/permission'
+import { usePermissionStore } from '@/store/permission'
 
-const permissionStore =usePermissionStore();
+const permissionStore = usePermissionStore();
 
 let fullPathList: Array<string> = []
 const pages = reactive<Array<RouteLocationNormalizedLoaded>>([])
 const activeKey = ref('')
-const router:Router = useRouter()
+const router: Router = useRouter()
 const { ctx } = getCurrentInstance() as any
 
 const selectedLastPath = () => {
@@ -76,13 +80,13 @@ selectedLastPath()
 const onEdit = (targetKey: string, action: any) => {
   remove(targetKey)
 }
-const onRefreshPage = (targetKey:string)=>{
-  events.emit("routeview.close",targetKey)
+const onRefreshPage = (targetKey: string) => {
+  events.emit("routeview.close", targetKey)
   // permissionStore.tagPaths = fullPathList.filter((path) => path != targetKey)
-  nextTick(()=>{
+  nextTick(() => {
     // permissionStore.tagPaths = fullPathList
     // router.push({path:targetKey,params:{time:Date.now()}})
-    router.push({path:'/'})
+    router.push({ path: '/' })
   })
 }
 const remove = (targetKey: string) => {
@@ -92,7 +96,7 @@ const remove = (targetKey: string) => {
     pages.length = 0
     pages.push(...temp)
   }
-  events.emit("routeview.close",targetKey)
+  events.emit("routeview.close", targetKey)
 
   fullPathList = fullPathList.filter((path) => path !== targetKey)
   permissionStore.tagPaths = fullPathList
@@ -178,7 +182,17 @@ watch(
 )
 
 watch(activeKey, (newPathKey) => {
-  router.push({ path: newPathKey })
+  if (newPathKey.indexOf("?") == -1) {
+    router.push({ path: newPathKey })
+  } else {
+    let queryStr = newPathKey.substring(newPathKey.indexOf("?") + 1)
+    let query: any = {}
+    queryStr.split("&").forEach(s => {
+      let kv = s.split("=")
+      query[kv[0]] = kv[1]
+    })
+    router.push({ path: newPathKey,query })
+  }
 })
 </script>
 <style lang="less">

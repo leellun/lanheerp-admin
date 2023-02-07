@@ -119,11 +119,11 @@
 </template>
 <script setup lang="ts"  >
 import { ref, reactive } from 'vue'
+import {useRouter} from 'vue-router'
 import type { ProductSearchDto, Product } from '@/api/pms/productApi'
 import { _productList, _updateDeleteStatus, _updatePublishStatus,_updateNewStatus,_updateRecommendStatus } from '@/api/pms/productApi'
 import { Form, Modal } from 'ant-design-vue';
-const jobId = ref<string>()
-const modalVisible = ref<boolean>(false)
+const router = useRouter()
 const selectedRowKeys = ref<string[]>([]);
 const data = ref<Array<Product | any>>([]);
 const pagination = reactive<any>({ pageSize: 10, pageNo: 1 })
@@ -240,8 +240,9 @@ const handleResetSearch = () => {
 }
 const handleAdd = (e?: Event) => {
     e?.preventDefault()
-    jobId.value = undefined
-    modalVisible.value = true;
+    router.push({
+        name:'addProduct',
+    })
 }
 const handleDeleteSelected = (e?: Event) => {
     e?.preventDefault()
@@ -260,8 +261,12 @@ const handleDeleteSelected = (e?: Event) => {
 }
 const handleEditRecord = (e?: Event, id?: string) => {
     e?.preventDefault()
-    jobId.value = id
-    modalVisible.value = true;
+    router.push({
+        name:'updateProduct',
+        query:{
+            id
+        }
+    })
 }
 const handleDeleteRecord = (ids: string[]) => {
     _updateDeleteStatus(ids).then(res => {

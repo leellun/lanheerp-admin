@@ -60,7 +60,6 @@ import { _fetchListWithChildren } from '@/api/pms/productCateApi'
 import { _getAllBrandList } from '@/api/pms/brandApi'
 import type { ProductDto } from '@/api/pms/productApi'
 import type { Brand } from '@/api/pms/brandApi'
-import type { ProductAttributeCategory } from '@/api/pms/productAttrCateApi'
 const props = withDefaults(defineProps<{
   value: ProductDto
 }>(), {
@@ -68,7 +67,6 @@ const props = withDefaults(defineProps<{
 const useForm = Form.useForm
 const emit = defineEmits(['nextStep'])
 //商品属性分类下拉选项
-const selectProductCateValue = ref<Array<ProductAttributeCategory>>([])
 const productCateOptions = ref<TreeSelectProps['treeData']>([]);
 const brandOptions = ref<Array<Brand>>([])
 const rulesRef = reactive({

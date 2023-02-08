@@ -19,7 +19,7 @@ export const setupBeforeEach = (router: Router) => {
         let catalogues = await permissionStore.getCatalogues();
         generateApiAsyncRoutes(router, catalogues);
         permissionStore.getUserPermissions();
-        next({ path: to.fullPath });
+        next({ path: to.path, query: to.query });
         return;
       }
       if (to.name === "login") {

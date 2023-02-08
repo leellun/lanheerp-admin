@@ -6,13 +6,13 @@
             <a-step title="填写商品属性" />
             <a-step title="选择商品关联" />
         </a-steps>
-        <ProductInfoDetail v-model:value="productParam" @nextStep="nextStep" v-if="currentTag === 0" />
+        <ProductInfoDetail v-model:value="productParam" @nextStep="nextStep" v-show="currentTag === 0" />
         <ProductSaleDetail v-model:value="productParam" @nextStep="nextStep" @prevStep="prevStep"
-            v-if="currentTag === 1" />
+            v-show="currentTag === 1" />
         <ProductAttrDetail v-model:value="productParam" @nextStep="nextStep" @prevStep="prevStep"
-            v-if="currentTag === 2" />
+            v-show="currentTag === 2" />
         <ProductRelationDetail v-model:value="productParam" @finishCommit="finishCommit" @prevStep="prevStep"
-            v-if="currentTag === 3" />
+            v-show="currentTag === 3" />
     </div>
 </template>
 <script lang="ts" setup>
@@ -81,6 +81,9 @@ const resetProductParam = () => {
 }
 resetProductParam()
 const router = useRouter()
+if (router.currentRoute.value.name === 'updateProduct' && router.currentRoute.value.query.id === undefined) {
+    router.push({ name: 'product', params: { closepath: router.currentRoute.value.fullPath } })
+}
 const routeName = router.currentRoute.value.name
 watch(() =>
     router.currentRoute.value,
@@ -90,6 +93,7 @@ watch(() =>
                 if (route.query.id != productParam.value.id) {
                     productParam.value.id = route.query.id
                     _getProduct(route.query.id as string).then(res => {
+                        currentTag.value = 0
                         resetProductParam()
                         let data = res.data as any
                         Object.keys(data).forEach(key => {
@@ -125,11 +129,11 @@ const finishCommit = () => {
         onOk: () => {
             if (productParam.value.id != '' && productParam.value.id != undefined && productParam.value.id != null) {
                 _updateProduct(productParam.value.id, productParam.value).then(res => {
-                    router.push({name:'product',params:{closepath:'/pms/updateProduct'}})
+                    router.push({ name: 'product', params: { closepath: router.currentRoute.value.fullPath } })
                 });
             } else {
                 _createProduct(productParam.value).then(res => {
-                    router.push({name:'product',params:{closepath:'/pms/addProduct'}})
+                    router.push({ name: 'product', params: { closepath: router.currentRoute.value.fullPath } })
                 });
             }
         },

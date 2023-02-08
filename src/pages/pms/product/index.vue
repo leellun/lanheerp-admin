@@ -119,14 +119,14 @@
 </template>
 <script setup lang="ts"  >
 import { ref, reactive } from 'vue'
-import {useRouter} from 'vue-router'
+import { useRouter } from 'vue-router'
 import type { ProductSearchDto, Product } from '@/api/pms/productApi'
-import { _productList, _updateDeleteStatus, _updatePublishStatus,_updateNewStatus,_updateRecommendStatus } from '@/api/pms/productApi'
+import { _productList, _updateDeleteStatus, _updatePublishStatus, _updateNewStatus, _updateRecommendStatus } from '@/api/pms/productApi'
 import { Form, Modal } from 'ant-design-vue';
 const router = useRouter()
 const selectedRowKeys = ref<string[]>([]);
 const data = ref<Array<Product | any>>([]);
-const pagination = reactive<any>({ pageSize: 10, pageNo: 1 })
+const pagination = reactive<any>({ pageSize: 10, current: 1 })
 const formRef = reactive<Partial<ProductSearchDto>>({
 })
 const useForm = Form.useForm
@@ -220,7 +220,7 @@ const getPageProducts = () => {
     loading.value = true
     formRef.pageSize = pagination.pageSize
     _productList(formRef as ProductSearchDto).then(res => {
-        pagination.pageNo = res.data.current
+        pagination.current = res.data.current
         pagination.pageSize = res.data.size
         pagination.total = res.data.total
         data.value = res.data.records
@@ -232,7 +232,7 @@ const getPageProducts = () => {
     })
 }
 const handleTableChange = (page: any, filters: any, sorter: any) => {
-    pagination.pageNo = page.pageNo;
+    formRef.pageNo = page.current
     getPageProducts();
 }
 const handleResetSearch = () => {
@@ -241,7 +241,7 @@ const handleResetSearch = () => {
 const handleAdd = (e?: Event) => {
     e?.preventDefault()
     router.push({
-        name:'addProduct',
+        name: 'addProduct',
     })
 }
 const handleDeleteSelected = (e?: Event) => {
@@ -262,8 +262,8 @@ const handleDeleteSelected = (e?: Event) => {
 const handleEditRecord = (e?: Event, id?: string) => {
     e?.preventDefault()
     router.push({
-        name:'updateProduct',
-        query:{
+        name: 'updateProduct',
+        query: {
             id
         }
     })

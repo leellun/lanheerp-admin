@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a-form :model="value" ref="productRelationForm" label-width="120px" style="width: 680px" size="small">
+    <a-form :model="value" label-width="120px" style="width: 680px" size="small">
       <a-form-item label="关联专题：">
         <a-transfer v-model:target-keys="selectSubject" :data-source="subjectList" :render="(item: any) => item.title"
           filter-placeholder="请输入专题名称" :titles="subjectTitles" />
@@ -48,6 +48,7 @@ const handlePrev = () => {
 const handleFinishCommit = () => {
   emit('finishCommit');
 }
+console.log(props.value.subjectProductRelationList)
 //选中的专题
 const selectSubject = computed({
   get: function () {

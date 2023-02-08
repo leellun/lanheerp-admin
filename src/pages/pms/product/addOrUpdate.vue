@@ -6,19 +6,18 @@
             <a-step title="填写商品属性" />
             <a-step title="选择商品关联" />
         </a-steps>
-        <ProductInfoDetail v-model:value="productParam" @nextStep="nextStep" v-show="currentTag === 0"
-            v-if="showStatus" />
+        <ProductInfoDetail v-model:value="productParam" @nextStep="nextStep" v-if="currentTag === 0" />
         <ProductSaleDetail v-model:value="productParam" @nextStep="nextStep" @prevStep="prevStep"
-            v-show="currentTag === 1" v-if="showStatus" />
+            v-if="currentTag === 1" />
         <ProductAttrDetail v-model:value="productParam" @nextStep="nextStep" @prevStep="prevStep"
-            v-show="currentTag === 2" v-if="showStatus" />
+            v-if="currentTag === 2" />
         <ProductRelationDetail v-model:value="productParam" @finishCommit="finishCommit" @prevStep="prevStep"
-            v-show="currentTag === 3" v-if="showStatus" />
+            v-if="currentTag === 3" />
     </div>
 </template>
 <script lang="ts" setup>
-import { ref, computed, watch } from 'vue'
-import { Router, useRoute, useRouter, RouteLocationNormalizedLoaded } from 'vue-router'
+import { ref, watch } from 'vue'
+import { useRouter, RouteLocationNormalizedLoaded } from 'vue-router'
 import ProductAttrDetail from './modals/ProductAttrDetail.vue';
 import ProductInfoDetail from './modals/ProductInfoDetail.vue';
 import ProductRelationDetail from './modals/ProductRelationDetail.vue';
@@ -28,6 +27,8 @@ import { SkuStock } from '@/api/pms/skuStockApi';
 import { _createProduct, _updateProduct, _getProduct } from '@/api/pms/productApi'
 import { Modal } from 'ant-design-vue';
 import { cloneDeep } from "lodash";
+import events from '@/utils/eventBus'
+import { getUrlParams } from '@/utils/util'
 const productParam = ref<ProductDto | any>({
     productLadderList: [],//商品阶梯价格
     productFullReductionList: [], //商品满减价格
@@ -79,6 +80,7 @@ const productParam = ref<ProductDto | any>({
     promotionType: undefined
 })
 const resetProductParam = () => {
+    currentTag.value = 0
     Object.keys(productParam.value).forEach(key => {
         if (productParam.value[key] != undefined) {
             if (typeof productParam.value[key] !== 'object') {
@@ -110,6 +112,7 @@ const restoreProductParam = (route: RouteLocationNormalizedLoaded) => {
     }
 }
 const router = useRouter()
+const currentPath = router.currentRoute.value.path
 if (router.currentRoute.value.name === 'updateProduct' && router.currentRoute.value.query.id === undefined) {
     router.push({ name: 'product', params: { closepath: router.currentRoute.value.fullPath } })
 }
@@ -120,8 +123,7 @@ const pageTabs: any = {}
 watch(() =>
     router.currentRoute.value,
     (route) => {
-        if (route.name === 'updateProduct'||route.name === 'addProduct') {
-            console.log(showStatus.value+":"+currentTag.value)
+        if (route.name === 'updateProduct' || route.name === 'addProduct') {
             pageParams[`${productParam.value.id === undefined ? 0 : productParam.value.id}`] = cloneDeep(productParam.value)
             pageTabs[`${productParam.value.id === undefined ? 0 : productParam.value.id}`] = currentTag.value
             showStatus.value = false
@@ -147,6 +149,22 @@ watch(() =>
             showStatus.value = true
         }
     }, { immediate: true, deep: true })
+//主要是tab模式下使用
+events.once('routeview.close', (fullPath: any) => {
+    if (fullPath.indexOf("?")) {
+        let arr = fullPath.split("?")
+        if (arr[0] === currentPath) {
+            let param = getUrlParams(fullPath)
+            let qid = param['id'];
+            if (qid == undefined) return;
+            delete pageParams[qid]
+            delete pageTabs[qid]
+            if (productParam.value.id != undefined && `${productParam.value.id}` === qid) {
+                resetProductParam()
+            }
+        }
+    }
+})
 const prevStep = () => {
     if (currentTag.value > 0 && currentTag.value < 4) {
         currentTag.value--;

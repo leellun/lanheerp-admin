@@ -193,6 +193,7 @@ const getProductAttrList = (cid: string, type: number) => {
   _getProductCateAttribute(cid, type).then(res => {
     if (type === 0) {
       productAttrs.value = res.data as OptionAttribute[]
+      refreshProductSkuList()
     } else {
       productParams.value = res.data as OptionAttribute[]
       if (props.value.productAttributeValueList.length > 0) {
@@ -229,20 +230,23 @@ const mergeProductAttr = () => {
       for (var j = 0; j < sptData.length; j++) {
         let spItem = sptData[j];
         let attrValue = attrValues[j]
-        if (attrValue.value.split(",").indexOf(spItem.value) == -1) {
+        if (attrValue.value != undefined && attrValue.value.split(",").indexOf(spItem.value) == -1) {
           attrValue.value = attrValue.value + "," + spItem.value
         }
       }
     }
   }
-  productParams.value.forEach(item => {
-    if (item.value != undefined || item.values != undefined) {
-      attrValues.push({
-        productAttributeId: item.id,
-        value: item.selectType === 2 ? item.values.join(",") : (item.value as string)
-      })
-    }
-  })
+  if (productParams.value != undefined) {
+    productParams.value.forEach(item => {
+      if (item.value != undefined || item.values != undefined) {
+        attrValues.push({
+          productAttributeId: item.id,
+          value: item.selectType === 2 ? item.values.join(",") : (item.value as string)
+        })
+      }
+    })
+  }
+
   props.value.productAttributeValueList = attrValues
 }
 getProductAttrCateList()
@@ -409,6 +413,23 @@ const handleRefreshProductSkuList = () => {
     item.value = undefined
     item.values = []
   })
+}
+const refreshProductSkuList=()=>{
+  if(props.value.skuStockList.length==0)return;
+  var skuColumns = new Array<any>()
+  var sptDataStr = props.value.skuStockList[0].spData
+  var sptData = JSON.parse(sptDataStr)
+  sptData.forEach((ii:any)=>{
+    skuColumns.push({
+      title: ii.key,
+      key: ii.key,
+      attr: true,
+      width: 100
+    })
+  })
+  skuColumns.push(...fixed_columns)
+  columns.value = skuColumns
+  refreshProductAttrPics()
 }
 if (props.value.productAttributeCategoryId != undefined && props.value.productAttributeCategoryId != null) {
   handleProductAttrChange(props.value.productAttributeCategoryId, true)

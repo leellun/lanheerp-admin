@@ -48,7 +48,6 @@ const handlePrev = () => {
 const handleFinishCommit = () => {
   emit('finishCommit');
 }
-console.log(props.value.subjectProductRelationList)
 //选中的专题
 const selectSubject = computed({
   get: function () {
@@ -57,15 +56,16 @@ const selectSubject = computed({
       return subjects;
     }
     for (let i = 0; i < props.value.subjectProductRelationList.length; i++) {
-      subjects.push(props.value.subjectProductRelationList[i].subjectId);
+      subjects.push(`${props.value.subjectProductRelationList[i].subjectId}`);
     }
     return subjects;
   },
   set: function (newValue) {
-    props.value.subjectProductRelationList = [];
+    let list = []
     for (let i = 0; i < newValue.length; i++) {
-      props.value.subjectProductRelationList.push({ subjectId: newValue[i] } as SubjectProductRelationDto);
+      list.push({ subjectId: newValue[i] } as SubjectProductRelationDto);
     }
+    props.value.subjectProductRelationList = list;
   }
 })
 //选中的优选
@@ -76,15 +76,16 @@ const selectPrefrenceArea = computed({
       return prefrenceAreas;
     }
     for (let i = 0; i < props.value.prefrenceAreaProductRelationList.length; i++) {
-      prefrenceAreas.push(props.value.prefrenceAreaProductRelationList[i].prefrenceAreaId);
+      prefrenceAreas.push(`${props.value.prefrenceAreaProductRelationList[i].prefrenceAreaId}`);
     }
     return prefrenceAreas;
   },
   set: function (newValue) {
-    props.value.prefrenceAreaProductRelationList = [];
+    let list = []
     for (let i = 0; i < newValue.length; i++) {
-      props.value.prefrenceAreaProductRelationList.push({ prefrenceAreaId: newValue[i] } as PrefrenceAreaProductRelationDto);
+      list.push({ prefrenceAreaId: newValue[i] } as PrefrenceAreaProductRelationDto);
     }
+    props.value.prefrenceAreaProductRelationList = list;
   }
 })
 

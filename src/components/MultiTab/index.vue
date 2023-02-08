@@ -61,6 +61,9 @@ events.once('multiTab.close', (val: any) => {
   }
   closeSelf(val)
 })
+events.once('multiTab.remove', (val: any) => {
+  remove(val)
+})
 events.once('multiTab.rename', ({ key, name }: any) => {
   try {
     const item = pages.find((item) => item.path === key)

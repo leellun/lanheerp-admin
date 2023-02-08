@@ -185,13 +185,14 @@ const finishCommit = () => {
         onOk: () => {
             if (productParam.value.id != '' && productParam.value.id != undefined && productParam.value.id != null) {
                 _updateProduct(productParam.value.id, productParam.value).then(res => {
-                    router.push({ name: 'product', params: { closepath: router.currentRoute.value.fullPath } })
+                    router.push({ name: 'product' })
                 });
             } else {
                 _createProduct(productParam.value).then(res => {
-                    router.push({ name: 'product', params: { closepath: router.currentRoute.value.fullPath } })
+                    router.push({ name: 'product' })
                 });
             }
+            events.emit("multiTab.remove", router.currentRoute.value.fullPath)
         },
     });
 }

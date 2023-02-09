@@ -20,7 +20,7 @@ export default {
   storage: {
     namespace: "PRO_",
   },
-  multiTab: true, //多标签
+  multiTab: false, //多标签
   grayMode: false, //黑白模式
   darkMode: false, // 色弱模式
   timeout:5000,//请求超时时间

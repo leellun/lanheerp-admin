@@ -85,8 +85,8 @@ export const getProductAttr = (id: string) => {
   });
 };
 
-export const getProductAttrInfo = (productCategoryId: string) => {
-  return httpRequest<any, ProductAttrInfoVo>({
+export const _getProductAttrInfo = (productCategoryId: string) => {
+  return httpRequest<any, Array<ProductAttrInfoVo>>({
     url: `/pms/productAttribute/attrInfo/${productCategoryId}`,
     method: "get",
   });

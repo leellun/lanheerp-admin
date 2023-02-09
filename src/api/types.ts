@@ -10,3 +10,7 @@ export interface Page<T> {
   current: number;
   pages: number;
 }
+export interface PageSearch{
+  pageNo: number;
+  pageSize: number;
+}

@@ -1,9 +1,5 @@
 import { httpRequest, httpRequestWithMsg } from "@/utils/request";
-import type { Page } from "../types";
-export interface ProductCategorySearch {
-  pageNum: number;
-  pageSize: number;
-}
+import type { Page,PageSearch } from "../types";
 export interface ProductCategory {
   id: string;
   parentId: string;
@@ -33,21 +29,21 @@ export interface ProductCategoryDto {
 export interface ProductCategoryWithChildrenItemVo extends ProductCategory {
   children: Array<ProductCategory>;
 }
-export function fetchList(parentId: string, params: ProductCategorySearch) {
+export function _getPageProductCategorys(parentId: string, params: PageSearch) {
   return httpRequest<any, Page<ProductCategory>>({
     url: "/pms/productCategory/list/" + parentId,
     method: "get",
     params: params,
   });
 }
-export function deleteProductCate(id: string) {
+export function _deleteProductCate(id: string) {
   return httpRequestWithMsg({
     url: "/pms/productCategory/delete/" + id,
     method: "delete",
   });
 }
 
-export function createProductCate(data: ProductCategoryDto) {
+export function _createProductCate(data: ProductCategoryDto) {
   return httpRequestWithMsg({
     url: "/pms/productCategory/create",
     method: "post",
@@ -55,7 +51,7 @@ export function createProductCate(data: ProductCategoryDto) {
   });
 }
 
-export function updateProductCate(id: string, data: ProductCategoryDto) {
+export function _updateProductCate(id: string, data: ProductCategoryDto) {
   return httpRequestWithMsg({
     url: "pms/productCategory/update/" + id,
     method: "put",
@@ -63,26 +59,32 @@ export function updateProductCate(id: string, data: ProductCategoryDto) {
   });
 }
 
-export function getProductCate(id: string) {
+export function _getProductCate(id: string) {
   return httpRequest<any, ProductCategory>({
     url: "pms/productCategory/" + id,
     method: "get",
   });
 }
 
-export function updateShowStatus(data: ProductCategoryDto) {
+export function _updateShowStatus(ids:Array<string>,showStatus:number) {
   return httpRequestWithMsg({
     url: "pms/productCategory/update/showStatus",
     method: "put",
-    data: data,
+    params: {
+      ids:ids.join(","),
+      showStatus
+    },
   });
 }
 
-export function updateNavStatus(data: ProductCategoryDto) {
+export function _updateNavStatus(ids:Array<string>,navStatus:number) {
   return httpRequestWithMsg({
     url: "pms/productCategory/update/navStatus",
     method: "put",
-    data: data,
+    params: {
+      ids,
+      navStatus
+    },
   });
 }
 

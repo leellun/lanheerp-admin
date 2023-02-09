@@ -65,14 +65,14 @@
 
 <script setup lang="ts">
 import { ref, reactive, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute,useRouter } from 'vue-router'
 import { _getPageAttributeCategory } from '@/api/pms/productAttrCateApi'
 import { _createProductAttr, _getProductAttr, _updateProductAttr } from '@/api/pms/productAttrApi'
 import type { ProductAttributeDto } from '@/api/pms/productAttrApi'
 import type { ProductAttributeCategory } from '@/api/pms/productAttrCateApi'
 import { cloneDeep } from "lodash";
 import { Form, Modal } from 'ant-design-vue';
-import router from '@/router'
+const router = useRouter()
 const useForm = Form.useForm
 const form = reactive<ProductAttributeDto>({
     filterType: 0,
@@ -117,7 +117,7 @@ watch(() => inputListFormat.value, (val) => {
     form.inputList = newVal
 })
 const getCateList = () => {
-    let listQuery = { pageNum: 1, pageSize: 100 };
+    let listQuery = { pageNo: 1, pageSize: 100 };
     _getPageAttributeCategory(listQuery as any).then(res => {
         productAttrCateList.value = res.data.records;
     });

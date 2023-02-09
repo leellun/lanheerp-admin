@@ -1,5 +1,5 @@
 import { httpRequest, httpRequestWithMsg } from "@/utils/request";
-import type { Page } from "../types";
+import type { Page,PageSearch } from "../types";
 export interface Brand {
   id: string;
   name: string;
@@ -13,11 +13,14 @@ export interface Brand {
   bigPic: string;
   brandStory: string;
 }
-export function _getBrandList(keyword?: string) {
+export interface BrandSearch extends  PageSearch{
+    keyword?:string
+}
+export function _getBrandList(params: BrandSearch) {
   return httpRequest<any, Page<Brand>>({
     url: 'pms/brand/list',
     method: 'get',
-    params: { keyword }
+    params
   })
 }
 export function _getAllBrandList(keyword?: string) {
@@ -27,47 +30,47 @@ export function _getAllBrandList(keyword?: string) {
     params: { keyword }
   })
 }
-export function createBrand(data: Brand) {
+export function _createBrand(data: Brand) {
   return httpRequestWithMsg({
     url: 'pms/brand/create',
     method: 'post',
     data: data
   })
 }
-export function updateShowStatus(data: any) {
+export function _updateShowStatus(data: any) {
   return httpRequestWithMsg({
     url: 'pms/brand/update/showStatus',
-    method: 'post',
+    method: 'put',
     data: data
   })
 }
 
-export function updateFactoryStatus(data: any) {
+export function _updateFactoryStatus(data: any) {
   return httpRequestWithMsg({
     url: 'pms/brand/update/factoryStatus',
-    method: 'post',
+    method: 'put',
     data: data
   })
 }
 
-export function deleteBrand(id: string) {
+export function _deleteBrand(id: string) {
   return httpRequestWithMsg({
     url: 'pms/brand/delete/' + id,
-    method: 'get',
+    method: 'delete',
   })
 }
 
-export function getBrand(id: string) {
+export function _getBrand(id: string) {
   return httpRequest({
     url: 'pms/brand/' + id,
     method: 'get',
   })
 }
 
-export function updateBrand(id: string, data: Brand) {
+export function _updateBrand(id: string, data: Brand) {
   return httpRequestWithMsg({
     url: 'pms/brand/update/' + id,
-    method: 'post',
+    method: 'put',
     data: data
   })
 }

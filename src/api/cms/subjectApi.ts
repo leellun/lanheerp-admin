@@ -20,7 +20,7 @@ export interface Subject {
 }
 export interface SubjectParam {
     keyword?: string
-    pageNum: number
+    pageNo: number
     pageSize: number
 }
 export function _getSubjectAll() {

@@ -49,8 +49,7 @@ service.interceptors.response.use(
         return responseData;
       } else {
         if (responseData.code != 200) {
-          message.error(responseData.msg);
-          return Promise.reject(responseData.msg);
+          return Promise.reject(responseData.message);
         }
         return responseData;
       }
@@ -59,8 +58,7 @@ service.interceptors.response.use(
   },
   (error) => {
     if (error.toString().indexOf("Error: timeout") !== -1) {
-      message.error("网络请求超时");
-      return Promise.reject(error);
+      return Promise.reject("网络请求超时");
     }
     console.log(error.response);
     if (error.response && error.response.data) {
@@ -112,6 +110,7 @@ export const httpRequestWithMsg = <T = any, R = AxiosResponse<T>, D = any>(
         resolve(res);
       })
       .catch((err) => {
+        console.log(err)
         message.error(err);
         reject(err);
       });

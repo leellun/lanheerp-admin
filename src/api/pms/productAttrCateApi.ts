@@ -1,11 +1,6 @@
 import { httpRequest, httpRequestWithMsg } from "@/utils/request";
-import type { Page } from "../types";
+import type { Page,PageSearch } from "../types";
 import type { ProductAttribute } from "./productAttrApi";
-export interface ProductAttrCateSearchDto {
-  pageNum: number;
-  pageSize: number;
-  type?: number;
-}
 export interface ProductAttributeCategory {
   id: string;
   name: string;
@@ -16,7 +11,7 @@ export interface ProductAttributeCategoryItemVo
   extends ProductAttributeCategory {
   productAttributeList: Array<ProductAttribute>;
 }
-export function getPageAttributeCategory(params: ProductAttrCateSearchDto) {
+export function _getPageAttributeCategory(params: PageSearch) {
   return httpRequest<any, Page<ProductAttributeCategory>>({
     url: "/pms/productAttribute/category/list",
     method: "get",
@@ -30,7 +25,7 @@ export function _getTotalAttributeCategory() {
   });
 }
 
-export function createProductAttrCate(name: string) {
+export function _createProductAttrCate(name: string) {
   return httpRequestWithMsg<any, any>({
     url: "/pms/productAttribute/category/create",
     method: "post",
@@ -38,14 +33,14 @@ export function createProductAttrCate(name: string) {
   });
 }
 
-export function deleteProductAttrCate(id: string) {
+export function _deleteProductAttrCate(id: string) {
   return httpRequestWithMsg<any,any>({
     url: "/pms/productAttribute/category/delete/" + id,
     method: "delete",
   });
 }
 
-export function updateProductAttrCate(id: string, name: string) {
+export function _updateProductAttrCate(id: string, name: string) {
   return httpRequestWithMsg({
     url: "/pms/productAttribute/category/update/" + id,
     method: "put",

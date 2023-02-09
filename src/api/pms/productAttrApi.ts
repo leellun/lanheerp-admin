@@ -1,8 +1,6 @@
 import { httpRequest, httpRequestWithMsg } from "@/utils/request";
-import { Page } from "../types";
-export interface ProductAttributeSearchDto {
-  pageNum: number;
-  pageSize: number;
+import { Page,PageSearch } from "../types";
+export interface ProductAttributeSearchDto extends PageSearch {
   type: number;
 }
 export interface ProductAttributeDto {
@@ -38,7 +36,7 @@ export interface ProductAttrInfoVo extends ProductAttribute {
   attributeId: string;
   attributeCategoryId: string;
 }
-export const fetchList = (cid: string, params: ProductAttributeSearchDto) => {
+export const _getProductAttrPage = (cid: string, params: ProductAttributeSearchDto) => {
   return httpRequest<any, Page<ProductAttribute>>({
     url: `/pms/productAttribute/list/${cid}`,
     method: "get",
@@ -55,7 +53,7 @@ export const _getProductCateAttribute = (cid: string,type:number) => {
   });
 };
 
-export const deleteProductAttr = (data: Array<string>) => {
+export const _deleteProductAttr = (data: Array<string>) => {
   return httpRequestWithMsg<any, any>({
     url: "/pms/productAttribute/delete",
     method: "delete",
@@ -63,7 +61,7 @@ export const deleteProductAttr = (data: Array<string>) => {
   });
 };
 
-export const createProductAttr = (data: ProductAttributeDto) => {
+export const _createProductAttr = (data: ProductAttributeDto) => {
   return httpRequestWithMsg<any, any>({
     url: "/pms/productAttribute/create",
     method: "post",
@@ -71,14 +69,14 @@ export const createProductAttr = (data: ProductAttributeDto) => {
   });
 };
 
-export const updateProductAttr = (id: string, data: ProductAttributeDto) => {
+export const _updateProductAttr = (id: string, data: ProductAttributeDto) => {
   return httpRequestWithMsg<any, any>({
     url: `/pms/productAttribute/update/${id}`,
     method: "put",
     data: data,
   });
 };
-export const getProductAttr = (id: string) => {
+export const _getProductAttr = (id: string) => {
   return httpRequest<any, ProductAttribute>({
     url: `/pms/productAttribute/${id}`,
     method: "get",

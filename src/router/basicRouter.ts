@@ -19,7 +19,6 @@ export const rootRouter: TRouter = {
   name: "index",
   path: "/",
   component: BasicLayout,
-  redirect: "目前逻辑是重定向到第一个菜单",
   meta: {
     title: "",
   },

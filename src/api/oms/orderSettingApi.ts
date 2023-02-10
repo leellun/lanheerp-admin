@@ -1,15 +1,23 @@
-import request from '@/utils/request'
-export function getOrderSetting(id) {
-  return request({
-    url:'/mall-admin-oms/orderSetting/'+id,
-    method:'get',
-  })
+import { httpRequest, httpRequestWithMsg } from "@/utils/request";
+export interface OrderSetting {
+  id: any;
+  flashOrderOvertime: number;
+  normalOrderOvertime: number;
+  confirmOvertime: number;
+  finishOvertime: number;
+  commentOvertime: number;
+}
+export function _getOrderSetting(id: any) {
+  return httpRequest<any, OrderSetting>({
+    url: "/oms/orderSetting/" + id,
+    method: "get",
+  });
 }
 
-export function updateOrderSetting(id,data) {
-  return request({
-    url:'/mall-admin-oms/orderSetting/update/'+id,
-    method:'post',
-    data:data
-  })
+export function _updateOrderSetting(id: any, data: OrderSetting) {
+  return httpRequestWithMsg({
+    url: "/oms/orderSetting/update/" + id,
+    method: "post",
+    data: data,
+  });
 }

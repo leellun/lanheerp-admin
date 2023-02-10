@@ -79,18 +79,21 @@
                 </template>
             </template>
         </a-table>
-        <CloseOrder :ids="modalIds" v-model:visible="modalVisible" v-if="modalVisible"  @ok="handleOk" />
+        <CloseOrder :ids="modalIds" v-model:visible="modalVisible" v-if="modalVisible" @ok="handleOk" />
+        <LogisticsModal v-model:visible="logisticsDialogVisible" v-if="logisticsDialogVisible" />
     </div>
 </template>
 <script setup lang="ts"  >
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import { OrderSearch, Order, _closeOrder } from '@/api/oms/orderApi'
-import { _getOrderPageLists, _deleteOrder } from '@/api/oms/orderApi'
+import type { OrderSearch, Order, OrderItem } from '@/api/oms/orderApi'
+import { _getOrderPageLists, _deleteOrder, _closeOrder } from '@/api/oms/orderApi'
 import { Form, Modal } from 'ant-design-vue';
 import CloseOrder from './modals/CloseOrder.vue';
+import LogisticsModal from './modals/LogisticsModal.vue'
 const modalVisible = ref<boolean>(false)
-const modalIds = ref<Array<string>>()
+const modalIds = ref<Array<any>>()
+const logisticsDialogVisible = ref<boolean>(false)
 const router = useRouter()
 const selectedRowKeys = ref<string[]>([]);
 const data = ref<Array<Order | any>>([]);
@@ -244,12 +247,6 @@ const handleTableChange = (page: any, filters: any, sorter: any) => {
 const handleResetSearch = () => {
     resetFields()
 }
-const handleAdd = (e?: Event) => {
-    e?.preventDefault()
-    router.push({
-        name: 'addProduct',
-    })
-}
 const handleDeleteSelected = (e?: Event) => {
     e?.preventDefault()
     if (selectedRowKeys.value.length > 0) {
@@ -268,7 +265,7 @@ const handleDeleteSelected = (e?: Event) => {
 const handleViewRecord = (e?: Event, id?: string) => {
     e?.preventDefault()
     router.push({
-        name: 'updateProduct',
+        name: 'orderDetail',
         query: {
             id
         }
@@ -293,10 +290,25 @@ const handleCloseOrder = (ids: string[]) => {
     modalVisible.value = true
 }
 const handleDeliveryOrder = (record: Order) => {
-
+    const listItem = covertOrder(record)
+    router.push({ name: 'deliverOrderList', query: { list: JSON.stringify([listItem]) } })
+}
+const covertOrder = (order: Order) => {
+    let address = order.receiverProvince + order.receiverCity + order.receiverRegion + order.receiverDetailAddress;
+    let listItem = {
+        orderId: order.id,
+        orderSn: order.orderSn,
+        receiverName: order.receiverName,
+        receiverPhone: order.receiverPhone,
+        receiverPostCode: order.receiverPostCode,
+        address: address,
+        deliveryCompany: null,
+        deliverySn: null
+    };
+    return listItem;
 }
 const handleViewLogistics = (record: Order) => {
-
+    logisticsDialogVisible.value = true
 }
 const handleOk = () => {
     handleSearch()

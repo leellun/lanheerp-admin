@@ -46,6 +46,41 @@ export interface Order {
   deleteStatus: number;
   useIntegration: number;
 }
+export interface OrderItem {
+  id: any;
+  orderId: any;
+  orderSn: string;
+  productId: any;
+  productPic: string;
+  productName: string;
+  productBrand: string;
+  productSn: string;
+  productPrice: number;
+  productQuantity: number;
+  productSkuId: any;
+  productCategoryId: any;
+  productSkuCode: string;
+  promotionName: string;
+  promotionAmount: number;
+  couponAmount: number;
+  integrationAmount: number;
+  realAmount: number;
+  giftIntegration: number;
+  giftGrowth: number;
+  productAttr: string;
+}
+export interface OrderOperateHistory {
+  id: any;
+  orderId: any;
+  operateMan: string;
+  createTime: string;
+  orderStatus: number;
+  note: string;
+}
+export interface OrderDetailVo extends Order {
+  orderItemList: Array<OrderItem>;
+  historyList: Array<OrderOperateHistory>;
+}
 export interface OrderSearch extends PageSearch {
   orderSn: string;
   receiverKeyword: string;
@@ -56,8 +91,7 @@ export interface OrderSearch extends PageSearch {
 }
 export interface CloseOrder {
   ids: Array<string>;
-  node: string;
-  status:number
+  note: string;
 }
 export interface DeliveryOrder {
   orderId: string;
@@ -86,6 +120,11 @@ export interface MoneyInfo {
   discountAmount: number;
   status: number;
 }
+export interface OrderDeliveryDto {
+  orderId:any
+  deliveryCompany:string
+  deliverySn:string
+}
 export function _getOrderPageLists(params: OrderSearch) {
   return httpRequest<any, Page<Order>>({
     url: "/oms/order/list",
@@ -98,7 +137,10 @@ export function _closeOrder(params: CloseOrder) {
   return httpRequestWithMsg({
     url: "/oms/order/update/close",
     method: "post",
-    params: { id: params.ids.join(","), note: params.node,status:4 },
+    params: {
+      ids: params.ids.join(","),
+      note: params.note,
+    },
   });
 }
 
@@ -110,7 +152,7 @@ export function _deleteOrder(ids: Array<string>) {
   });
 }
 
-export function _deliveryOrder(data: DeliveryOrder) {
+export function _deliveryOrder(data: Array<OrderDeliveryDto>) {
   return httpRequestWithMsg({
     url: "/oms/order/update/delivery",
     method: "post",
@@ -119,7 +161,7 @@ export function _deliveryOrder(data: DeliveryOrder) {
 }
 
 export function _getOrderDetail(id: string) {
-  return httpRequestWithMsg({
+  return httpRequest<any,OrderDetailVo>({
     url: "/oms/order/" + id,
     method: "get",
   });

@@ -1,5 +1,5 @@
 <template>
-    <a-modal v-model:visible="modalVisible" title="关闭订单" @ok="handleOk" @cancel="handleCancel">
+    <a-modal v-model:visible="modalVisible" title="备注订单" @ok="handleOk" @cancel="handleCancel">
         <a-form :model="form">
             <a-form-item label="操作备注：" :labelCol="labelCol" :wrapperCol="wrapperCol" v-bind="validateInfos.note">
                 <a-textarea placeholder="请输入备注" v-model:value="form.note" :autoSize="{ minRows: 4, maxRows: 4 }" />
@@ -10,13 +10,13 @@
 <script setup lang="ts">
 import { reactive, computed } from 'vue'
 import { Form } from 'ant-design-vue';
-import { _getOrderDetail, _updateReceiverInfo, _updateMoneyInfo, _closeOrder, _updateOrderNote, _deleteOrder } from '@/api/oms/orderApi'
-import type { CloseOrder } from '@/api/oms/orderApi'
+import { _updateOrderNote } from '@/api/oms/orderApi'
 const emit = defineEmits(["update:visible", "ok", "cancel"])
 const useForm = Form.useForm
 const props = withDefaults(defineProps<{
     visible: boolean,
-    ids: any
+    id: any,
+    status: number
 }>(), {
     visible: false
 })
@@ -36,9 +36,13 @@ const wrapperCol = {
     xs: { span: 24 },
     sm: { span: 16 },
 }
-const form = reactive<Partial<CloseOrder>>({
+const form = reactive<any>({
+    id: undefined,
+    status: undefined,
+    note: undefined
 })
-form.ids = props.ids
+form.id = props.id
+form.status = props.status
 const rulesRef = reactive({
     note: [{
         required: true,
@@ -49,10 +53,10 @@ const rulesRef = reactive({
 const { validate, validateInfos } = useForm(form, rulesRef)
 const handleOk = () => {
     validate().then(async () => {
-        _closeOrder(form as CloseOrder).then(res => {
+        _updateOrderNote(form as any).then(res => {
             emit("update:visible", false)
             emit("ok")
-        })
+        });
     })
 }
 const handleCancel = () => {

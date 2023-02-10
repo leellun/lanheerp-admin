@@ -61,6 +61,7 @@ declare module '@vue/runtime-core' {
     ATree: typeof import('ant-design-vue/es')['Tree']
     ATreeSelect: typeof import('ant-design-vue/es')['TreeSelect']
     AUpload: typeof import('ant-design-vue/es')['Upload']
+    ElSelectOption: typeof import('element-plus/es')['ElSelectOption']
     GlobalFooter: typeof import('./src/components/GlobalFooter/index.vue')['default']
     GlobalHeader: typeof import('./src/components/GlobalHeader/index.vue')['default']
     Logo: typeof import('./src/components/tools/Logo.vue')['default']

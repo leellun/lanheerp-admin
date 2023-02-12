@@ -113,7 +113,7 @@ export const httpRequestWithMsg = <T = any, R = AxiosResponse<T>, D = any>(
         console.log(err)
         message.error(err);
         reject(err);
-      });
+      })
   });
 };
 export default service;

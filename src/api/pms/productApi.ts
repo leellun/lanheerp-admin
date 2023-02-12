@@ -120,11 +120,11 @@ export const _productList = (params: ProductSearchDto) => {
     params,
   });
 };
-export const _fetchSimpleList = (params: any) => {
+export const _getProductSimpleList = (keyword: string) => {
   return httpRequest<any,Array<Product>>({
     url: "/pms/product/simpleList",
     method: "get",
-    params: params,
+    params: {keyword},
   });
 };
 

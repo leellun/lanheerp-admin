@@ -7,24 +7,27 @@ export interface FlashPromotionSession {
   status: number
   createTime: string
 }
-export function _getList() {
+export interface FlashPromotionSessionDetailVo extends FlashPromotionSession{
+  productCount:number
+}
+export function _getFlashSessionList() {
   return httpRequest<any,Array<FlashPromotionSession>>({
-    url: '/flashPromotionSession/list',
+    url: '/sms/flashPromotionSession/list',
     method: 'get',
   })
 }
 
-export function _getSelectList(flashPromotionId:any) {
-  return httpRequest<any,Array<FlashPromotionSession>>({
-    url: '/flashPromotionSession/selectList',
+export function _getSessionSelectList(flashPromotionId:any) {
+  return httpRequest<any,Array<FlashPromotionSessionDetailVo>>({
+    url: '/sms/flashPromotionSession/selectList',
     method: 'get',
     params: {flashPromotionId}
   })
 }
 
-export function _updateStatus(id:any, status:number) {
+export function _updateFlashSessionStatus(id:any, status:number) {
   return httpRequestWithMsg({
-    url: '/flashPromotionSession/update/status/' + id,
+    url: '/sms/flashPromotionSession/update/status/' + id,
     method: 'post',
     params: {status}
   })
@@ -32,14 +35,14 @@ export function _updateStatus(id:any, status:number) {
 
 export function _deleteSession(id:any) {
   return httpRequestWithMsg({
-    url: '/flashPromotionSession/delete/' + id,
+    url: '/sms/flashPromotionSession/delete/' + id,
     method: 'post'
   })
 }
 
 export function _createSession(data:FlashPromotionSession) {
   return httpRequestWithMsg({
-    url: '/flashPromotionSession/create',
+    url: '/sms/flashPromotionSession/create',
     method: 'post',
     data: data
   })
@@ -47,7 +50,7 @@ export function _createSession(data:FlashPromotionSession) {
 
 export function _updateSession(id:any, data:FlashPromotionSession) {
   return httpRequestWithMsg({
-    url: '/flashPromotionSession/update/' + id,
+    url: '/sms/flashPromotionSession/update/' + id,
     method: 'post',
     data: data
   })

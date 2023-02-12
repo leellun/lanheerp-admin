@@ -13,34 +13,34 @@ export interface FlashPromotionSearch extends PageSearch{
 }
 export function _getFlashPromotionPage(params:FlashPromotionSearch) {
   return httpRequest<any,Page<FlashPromotion>>({
-    url:'/flashPromotion/list',
+    url:'/sms/flashPromotion/list',
     method:'get',
     params:params
   })
 }
 export function _updateFlashStatus(id:any,status:number) {
   return httpRequestWithMsg({
-    url:'/flashPromotion/update/status/'+id,
+    url:'/sms/flashPromotion/update/status/'+id,
     method:'post',
     params:{status}
   })
 }
 export function _deleteFlash(id:any) {
   return httpRequestWithMsg({
-    url:'/flashPromotion/delete/'+id,
+    url:'/sms/flashPromotion/delete/'+id,
     method:'post'
   })
 }
 export function _createFlash(data:FlashPromotion) {
   return httpRequestWithMsg({
-    url:'/flashPromotion/create',
+    url:'/sms/flashPromotion/create',
     method:'post',
     data:data
   })
 }
-export function updateFlash(id:any,data:FlashPromotion) {
+export function _updateFlash(id:any,data:FlashPromotion) {
   return httpRequestWithMsg({
-    url:'/flashPromotion/update/'+id,
+    url:'/sms/flashPromotion/update/'+id,
     method:'post',
     data:data
   })

@@ -1,5 +1,5 @@
 import { httpRequest, httpRequestWithMsg } from "@/utils/request";
-import type { Page } from "../types";
+import type { Page,PageSearch } from "../types";
 export interface Subject {
     id: string //专题id
     categoryId: string //分类id
@@ -18,10 +18,8 @@ export interface Subject {
     content: string
     forwardCount: number //转发数
 }
-export interface SubjectParam {
+export interface SubjectParam extends PageSearch {
     keyword?: string
-    pageNo: number
-    pageSize: number
 }
 export function _getSubjectAll() {
     return httpRequest<any, Array<Subject>>({

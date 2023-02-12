@@ -57,7 +57,7 @@
                 </template>
             </template>
         </a-table>
-        <HomeBrandModal v-model:visible="modalVisible" v-if="modalVisible" />
+        <HomeBrandModal v-model:visible="modalVisible" v-if="modalVisible" @ok="handleOk" />
     </div>
 </template>
 <script setup lang="ts"  >
@@ -133,6 +133,7 @@ const handleTableChange = (page: any, filters: any, sorter: any) => {
     getPageLists();
 }
 const handleResetSearch = () => {
+    formRef.pageNo = 1
     resetFields()
 }
 const handleUpdateStatus = (row: HomeBrand) => {
@@ -151,6 +152,9 @@ const handleUpdateStatus = (row: HomeBrand) => {
 const handleAdd = (e?: Event) => {
     e?.preventDefault()
     modalVisible.value = true
+}
+const handleOk = () => {
+    handleSearch()
 }
 handleSearch()
 </script>

@@ -1,7 +1,7 @@
 <template>
   <div class="main-container">
     <a-card>
-      <a-form :model="orderSetting">
+      <a-form :model="orderSetting" :labelCol="{ style: { width: '150px' } }">
         <a-form-item label="秒杀订单超过：" v-bind="validateInfos.flashOrderOvertime">
           <a-input v-model:value="orderSetting.flashOrderOvertime" class="input-width">
             <template slot="append">分</template>
@@ -32,8 +32,8 @@
           </a-input>
           <span class="note-margin">自动五星好评</span>
         </a-form-item>
-        <a-form-item>
-          <a-button @click="confirm" type="primary">提交</a-button>
+        <a-form-item >
+          <a-button @click="confirm" type="primary" style="margin-left:150px">提交</a-button>
         </a-form-item>
       </a-form>
     </a-card>

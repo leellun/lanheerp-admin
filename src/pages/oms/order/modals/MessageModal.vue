@@ -1,6 +1,6 @@
 <template>
     <a-modal v-model:visible="modalVisible" title="发送站内信" @ok="handleOk" @cancel="handleCancel">
-        <a-form :model="form" ref="receiverInfoForm" label-width="150px">
+        <a-form :model="form" ref="receiverInfoForm" >
             <a-form-item label="标题：" v-bind="validateInfos.title">
                 <a-input v-model:value="form.title" style="width: 200px"></a-input>
             </a-form-item>
